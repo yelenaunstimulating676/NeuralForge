@@ -1,0 +1,48 @@
+﻿# ================================================================
+# IMPORTANT: PyTorch CUDA installation
+# ================================================================
+# Install torch FIRST and SEPARATELY from this file, using the
+# NVIDIA index URL, otherwise pip will pull the CPU-only wheel:
+#
+#   pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
+#
+# Then run:
+#
+#   pip install -r requirements.txt
+# ================================================================
+
+# Web framework
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+websockets==12.0
+python-multipart==0.0.12
+
+# DB
+sqlalchemy==2.0.35
+aiosqlite==0.20.0
+
+# ML core (torch installed separately above)
+transformers==4.47.0
+bitsandbytes==0.49.2
+peft==0.13.0
+accelerate==1.0.0
+sentencepiece
+
+# Dataset extraction
+PyMuPDF==1.24.14
+pandas==2.2.0
+python-docx==1.1.0
+sentence-transformers==3.0.0
+chardet==5.2.0
+
+# GPU / system
+pynvml==11.5.0
+
+# Utilities
+pydantic==2.9.0
+pydantic-settings==2.6.0
+python-dotenv==1.0.1
+tqdm==4.66.0
+
+# Dev
+httpx==0.27.0

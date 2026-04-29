@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+/* ===== Theme tokens (Tailwind 4 syntax) ===== */
+@theme {
+  --color-bg: #0b0d12;
+  --color-surface: #131722;
+  --color-surface-2: #1b2030;
+  --color-border: #262c3d;
+  --color-text: #e4e7ee;
+  --color-text-muted: #8a93a6;
+  --color-accent: #6366f1;
+  --color-accent-hover: #7c7ff5;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+}
+
+/* ===== Base ===== */
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar dark */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-surface-2);
+}

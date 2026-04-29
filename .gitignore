@@ -1,29 +1,25 @@
-# Python
-venv/
-__pycache__/
+﻿# Python
+backend/venv/
+backend/__pycache__/
+**/__pycache__/
 *.pyc
 *.pyo
-.env
 
-# Node
-node_modules/
-dist/
-.vite/
-
-# Modelli e dataset (troppo grandi per GitHub)
-backend/models/
+# Storage runtime
 backend/data/
-*.pt
-*.safetensors
-*.gguf
+backend/logs/
 
-# DB locale
-*.db
-*.sqlite
+# Env
+backend/.env
 
-# Logs
-logs/
-*.log
+# Frontend
+frontend/node_modules/
+frontend/dist/
 
-# VS Code
-.vscode/settings.json
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
