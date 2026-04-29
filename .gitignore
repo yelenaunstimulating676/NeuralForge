@@ -11,6 +11,9 @@ backend/logs/
 
 # Env
 backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
 
 # Frontend
 frontend/node_modules/
