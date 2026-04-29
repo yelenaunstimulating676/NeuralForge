@@ -1,0 +1,29 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Modelli e dataset (troppo grandi per GitHub)
+backend/models/
+backend/data/
+*.pt
+*.safetensors
+*.gguf
+
+# DB locale
+*.db
+*.sqlite
+
+# Logs
+logs/
+*.log
+
+# VS Code
+.vscode/settings.json
