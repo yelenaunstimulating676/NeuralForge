@@ -52,12 +52,25 @@ SessionLocal = sessionmaker(
 
 
 def init_db() -> None:
-    """Crea tutte le tabelle. Idempotente."""
+    """
+    Crea tutte le tabelle definite nei modelli ORM importati.
+    Idempotente: non tocca tabelle esistenti.
+    """
     settings.ensure_directories()
-    # In M2+ verranno aggiunti qui gli import dei modelli ORM:
-    # from db import models  # noqa: F401
+
+    # Import dei modelli per registrarli su Base.metadata.
+    # È importante farlo PRIMA di create_all().
+    from db import models  # noqa: F401
+
     Base.metadata.create_all(bind=engine)
-    logger.info("Database inizializzato: %s", settings.database_url_resolved)
+
+    # Log delle tabelle create/esistenti
+    table_names = sorted(Base.metadata.tables.keys())
+    logger.info(
+        "Database inizializzato: %s | tabelle: %s",
+        settings.database_url_resolved,
+        ", ".join(table_names),
+    )
 
 
 def get_session() -> Iterator[Session]:

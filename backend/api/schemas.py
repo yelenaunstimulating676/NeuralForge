@@ -115,3 +115,100 @@ class TrainingConfigSchema(BaseModel):
     notes: list[str] = Field(
         default_factory=list, description="Note esplicative sulla configurazione."
     )
+    
+# ===========================================================================
+# Models domain (M2)
+# ===========================================================================
+
+
+class WhitelistEntrySchema(BaseModel):
+    """Voce della whitelist di modelli supportati."""
+
+    hf_repo: str = Field(description="Identificativo HuggingFace 'org/name'.")
+    display_name: str = Field(description="Nome visualizzato in UI.")
+    size_gb: float = Field(ge=0, description="Dimensione approssimativa in GB.")
+    params_billions: float = Field(ge=0, description="Parametri in miliardi.")
+    tag: str = Field(description="Famiglia (qwen2.5, phi3.5, smollm2, ...).")
+    description: str = Field(default="", description="Descrizione opzionale.")
+
+
+class BaseModelSchema(BaseModel):
+    """Modello base scaricato e registrato in DB."""
+
+    id: int
+    hf_repo: str
+    display_name: str
+    tag: str | None
+    local_path: str
+    size_bytes: int = Field(ge=0)
+    params_billions: float | None
+    is_custom: bool
+    downloaded_at: str = Field(description="ISO 8601 timestamp.")
+
+
+class DownloadRequestSchema(BaseModel):
+    """Body POST /api/models/base/download."""
+
+    hf_repo: str = Field(
+        description="Repository HuggingFace 'org/name'.",
+        examples=["Qwen/Qwen2.5-0.5B"],
+    )
+    token: str | None = Field(
+        default=None,
+        description="Token HF opzionale per repo gated.",
+    )
+
+
+class JobSchema(BaseModel):
+    """Stato di un Job asincrono."""
+
+    id: str
+    kind: str
+    status: str = Field(description="pending | running | completed | failed | cancelled.")
+    progress: float = Field(ge=0, le=1)
+    progress_message: str
+    result: dict | None = None
+    error: str | None = None
+    created_at: str
+    started_at: str | None = None
+    finished_at: str | None = None
+
+
+class JobCreatedSchema(BaseModel):
+    """Response a POST /api/models/base/download."""
+
+    job_id: str
+    status: str
+
+
+class ValidateRepoRequestSchema(BaseModel):
+    """Body POST /api/models/validate-repo."""
+
+    hf_repo: str
+    token: str | None = None
+
+
+class ValidateRepoResponseSchema(BaseModel):
+    """Response a POST /api/models/validate-repo."""
+
+    hf_repo: str
+    accessible: bool
+    tags: list[str] = Field(default_factory=list)
+    siblings_count: int = 0
+    gated: bool = Field(
+        default=False,
+        description="True se il repo richiede l'accettazione di una licenza HF.",
+    )
+    requires_token: bool = Field(
+        default=False,
+        description="True se serve un token HF per scaricarlo (gated + nessun token fornito).",
+    )
+    message: str | None = None
+
+
+class DeleteResponseSchema(BaseModel):
+    """Response generica per le DELETE."""
+
+    deleted: bool
+    id: int | None = None
+    message: str | None = None

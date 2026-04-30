@@ -40,3 +40,29 @@ export function formatMBasGB(mb, decimals = 1) {
   if (mb < 1024) return formatMB(mb)
   return `${formatFloat(mb / 1024, decimals)} GB`
 }
+
+/** Formatta byte come MB/GB human-readable. */
+export function formatBytes(bytes, decimals = 1) {
+  if (bytes == null || Number.isNaN(bytes)) return '—'
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${formatFloat(bytes / 1024, decimals)} KB`
+  if (bytes < 1024 * 1024 * 1024) return `${formatFloat(bytes / (1024 * 1024), decimals)} MB`
+  return `${formatFloat(bytes / (1024 * 1024 * 1024), decimals)} GB`
+}
+
+/** Formatta una data ISO come dd/mm/yyyy hh:mm in locale italiana. */
+export function formatDateTime(isoString) {
+  if (!isoString) return '—'
+  try {
+    const d = new Date(isoString)
+    return d.toLocaleString('it-IT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  } catch {
+    return isoString
+  }
+}

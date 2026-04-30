@@ -40,7 +40,11 @@ async def lifespan(_: FastAPI):
     logger.info("Server pronto su http://%s:%d", settings.host, settings.port)
     yield
 
-    # Shutdown ordinato
+    # Shutdown ordinato:
+    # 1. Cancella tutti i job in corso
+    from core.jobs import job_manager
+    await job_manager.shutdown()
+    # 2. Chiudi NVML
     shutdown_nvml()
     logger.info("NeuralForge — shutdown")
 
@@ -84,9 +88,10 @@ def root() -> JSONResponse:
 
 
 # Routers
-from api import system
+from api import models, system
 
 app.include_router(system.router)
+app.include_router(models.router)
 
 
 if __name__ == "__main__":
