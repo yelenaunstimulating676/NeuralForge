@@ -1,29 +1,97 @@
 /**
  * Dashboard — landing page.
- * In M0 mostra solo il check di connessione al backend.
- * In M1 verrà arricchita con info GPU + VRAM live.
+ * Mostra stato backend, sistema, GPU rilevate (con VRAM live)
+ * e configurazione di training suggerita.
  */
 
 import { useEffect, useState } from 'react'
-import { CheckCircle2, XCircle, Loader2 } from 'lucide-react'
-import { fetchHealth } from '../api/client'
+import { Loader2, AlertTriangle } from 'lucide-react'
+import {
+  fetchHealth,
+  fetchSystemInfo,
+  fetchTrainingSuggestion,
+} from '../api/client'
+import SystemCard from '../components/SystemCard'
+import GPUCard from '../components/GPUCard'
+import ConfigSuggestion from '../components/ConfigSuggestion'
 
 export default function Dashboard() {
   const [health, setHealth] = useState(null)
+  const [systemInfo, setSystemInfo] = useState(null)
+  const [config, setConfig] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchHealth()
-      .then((data) => {
-        setHealth(data)
-        setError(null)
-      })
-      .catch((err) => {
-        setError(err.message ?? 'Errore sconosciuto')
-      })
-      .finally(() => setLoading(false))
+    let cancelled = false
+
+    const load = async () => {
+      try {
+        const [h, s] = await Promise.all([fetchHealth(), fetchSystemInfo()])
+        if (cancelled) return
+        setHealth(h)
+        setSystemInfo(s)
+
+        // Config suggerita solo se c'è almeno una GPU
+        if (s.gpu_count > 0) {
+          try {
+            const cfg = await fetchTrainingSuggestion(0, 16)
+            if (!cancelled) setConfig(cfg)
+          } catch (e) {
+            console.warn('Config suggestion failed:', e.message)
+          }
+        }
+      } catch (err) {
+        if (!cancelled) setError(err.message ?? 'Errore di caricamento')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    load()
+    return () => {
+      cancelled = true
+    }
   }, [])
+
+  // ===== Loading =====
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="flex items-center gap-2 text-[var(--color-text-muted)]">
+          <Loader2 size={18} className="animate-spin" />
+          <span className="text-sm">Caricamento sistema…</span>
+        </div>
+      </div>
+    )
+  }
+
+  // ===== Error =====
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <header>
+          <h1 className="text-2xl font-semibold text-[var(--color-text)]">
+            Dashboard
+          </h1>
+        </header>
+        <div className="flex items-start gap-3 rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10 p-4">
+          <AlertTriangle
+            size={18}
+            className="mt-0.5 shrink-0 text-[var(--color-danger)]"
+          />
+          <div>
+            <p className="text-sm font-medium text-[var(--color-danger)]">
+              Errore di connessione al backend
+            </p>
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              {error}
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -32,74 +100,46 @@ export default function Dashboard() {
           Dashboard
         </h1>
         <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-          Stato del sistema NeuralForge
+          Stato del sistema NeuralForge · Backend v{health?.version}
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {/* Card: Backend health */}
-        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-[var(--color-text-muted)]">
-              Backend
-            </h3>
-            {loading && (
-              <Loader2 size={16} className="animate-spin text-[var(--color-text-muted)]" />
-            )}
-            {!loading && !error && (
-              <CheckCircle2 size={16} className="text-[var(--color-success)]" />
-            )}
-            {!loading && error && (
-              <XCircle size={16} className="text-[var(--color-danger)]" />
-            )}
+      {/* Sistema + GPU */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {systemInfo && (
+          <div className="lg:col-span-1">
+            <SystemCard info={systemInfo} />
           </div>
-          <div className="mt-3">
-            {loading && (
-              <p className="text-sm text-[var(--color-text-muted)]">Connecting…</p>
-            )}
-            {!loading && health && (
-              <>
-                <p className="text-2xl font-semibold text-[var(--color-success)]">
-                  Online
-                </p>
-                <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-                  Version {health.version} · {new Date(health.timestamp).toLocaleString('it-IT')}
-                </p>
-              </>
-            )}
-            {!loading && error && (
-              <>
-                <p className="text-2xl font-semibold text-[var(--color-danger)]">
-                  Offline
-                </p>
-                <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-                  {error}
-                </p>
-              </>
-            )}
+        )}
+
+        {systemInfo && systemInfo.gpus.length > 0 && (
+          <div className="lg:col-span-2 grid grid-cols-1 gap-4 md:grid-cols-1">
+            {systemInfo.gpus.map((g) => (
+              <GPUCard key={g.index} gpu={g} />
+            ))}
           </div>
-        </div>
+        )}
 
-        {/* Card: GPU placeholder (M1) */}
-        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5 opacity-60">
-          <h3 className="text-sm font-medium text-[var(--color-text-muted)]">
-            GPU
-          </h3>
-          <p className="mt-3 text-sm text-[var(--color-text-muted)] italic">
-            Disponibile in M1 — System Detector
-          </p>
-        </div>
-
-        {/* Card: Datasets placeholder */}
-        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5 opacity-60">
-          <h3 className="text-sm font-medium text-[var(--color-text-muted)]">
-            Datasets
-          </h3>
-          <p className="mt-3 text-sm text-[var(--color-text-muted)] italic">
-            Disponibile in M3 — Dataset Engine
-          </p>
-        </div>
+        {systemInfo && systemInfo.gpus.length === 0 && (
+          <div className="lg:col-span-2 flex items-center justify-center rounded-lg border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] p-8">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <AlertTriangle
+                size={24}
+                className="text-[var(--color-warning)]"
+              />
+              <p className="text-sm font-medium text-[var(--color-text)]">
+                Nessuna GPU NVIDIA rilevata
+              </p>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                NeuralForge richiede una GPU CUDA per il training.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Config suggerita */}
+      {config && <ConfigSuggestion config={config} />}
     </div>
   )
 }

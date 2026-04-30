@@ -75,9 +75,10 @@ def root() -> JSONResponse:
     )
 
 
-# Future routers (M1+):
-# from api import system
-# app.include_router(system.router)
+# Routers
+from api import system
+
+app.include_router(system.router)
 
 
 if __name__ == "__main__":

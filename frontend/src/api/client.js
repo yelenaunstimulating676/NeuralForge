@@ -15,7 +15,6 @@ export const api = axios.create({
   },
 })
 
-// Interceptor di risposta: log errori in console
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -30,5 +29,22 @@ api.interceptors.response.use(
   }
 )
 
-// Helpers
+// ===== Health =====
 export const fetchHealth = () => api.get('/api/health').then((r) => r.data)
+
+// ===== System =====
+export const fetchSystemInfo = () =>
+  api.get('/api/system/info').then((r) => r.data)
+
+export const fetchGpus = () =>
+  api.get('/api/system/gpus').then((r) => r.data)
+
+export const fetchVram = (index = 0) =>
+  api.get('/api/system/vram', { params: { index } }).then((r) => r.data)
+
+export const fetchTrainingSuggestion = (index = 0, targetEffectiveBatch = 16) =>
+  api
+    .get('/api/system/suggest', {
+      params: { index, target_effective_batch: targetEffectiveBatch },
+    })
+    .then((r) => r.data)
