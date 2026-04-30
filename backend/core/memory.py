@@ -37,6 +37,11 @@ except ImportError:
         "Installa con `pip install pynvml`."
     )
 
+# Stato di inizializzazione NVML gestito a livello applicazione.
+# Si inizializza UNA volta nel lifespan di FastAPI (vedi main.py),
+# si chiude allo shutdown. Evita init/shutdown ad ogni call.
+_nvml_initialized: bool = False
+
 
 # ---------------------------------------------------------------------------
 # Data classes
@@ -102,39 +107,61 @@ def _bytes_to_mb(value: int) -> int:
     return int(value // (1024 * 1024))
 
 
-def _safe_nvml_init() -> bool:
-    """Inizializza pynvml in modo sicuro. Ritorna True in caso di successo."""
+def init_nvml() -> bool:
+    """
+    Inizializza pynvml a livello applicazione. Idempotente.
+    Da chiamare UNA volta nel lifespan startup di FastAPI.
+
+    Returns:
+        True se NVML è stato inizializzato (o lo era già), False altrimenti.
+    """
+    global _nvml_initialized
+    if _nvml_initialized:
+        return True
     if not _PYNVML_AVAILABLE:
+        logger.info("pynvml non disponibile: salto init.")
         return False
     try:
         pynvml.nvmlInit()
+        _nvml_initialized = True
+        logger.info("NVML inizializzato.")
         return True
     except Exception as exc:  # noqa: BLE001
-        logger.warning("pynvml init fallita: %s", exc)
+        logger.warning("NVML init fallita: %s", exc)
         return False
 
 
-def _safe_nvml_shutdown() -> None:
-    """Chiude pynvml in modo sicuro."""
-    if not _PYNVML_AVAILABLE:
+def shutdown_nvml() -> None:
+    """
+    Chiude pynvml. Da chiamare UNA volta nel lifespan shutdown di FastAPI.
+    Idempotente: chiamarla più volte è sicuro.
+    """
+    global _nvml_initialized
+    if not _nvml_initialized:
         return
     try:
         pynvml.nvmlShutdown()
+        logger.info("NVML chiuso.")
     except Exception as exc:  # noqa: BLE001
-        logger.debug("pynvml shutdown ignorata: %s", exc)
+        logger.debug("NVML shutdown ignorata: %s", exc)
+    finally:
+        _nvml_initialized = False
+
+
+def _is_nvml_ready() -> bool:
+    """Predicato interno: NVML disponibile E già inizializzato."""
+    return _PYNVML_AVAILABLE and _nvml_initialized
 
 
 def _get_driver_and_cuda_version() -> tuple[str | None, str | None]:
     """Ritorna (driver_version, cuda_runtime_version)."""
     driver_version: str | None = None
-    if _safe_nvml_init():
+    if _is_nvml_ready():
         try:
             raw = pynvml.nvmlSystemGetDriverVersion()
             driver_version = raw.decode() if isinstance(raw, bytes) else str(raw)
         except Exception as exc:  # noqa: BLE001
             logger.warning("Lettura driver NVIDIA fallita: %s", exc)
-        finally:
-            _safe_nvml_shutdown()
 
     cuda_runtime = torch.version.cuda
     return driver_version, cuda_runtime
@@ -142,7 +169,7 @@ def _get_driver_and_cuda_version() -> tuple[str | None, str | None]:
 
 def _read_vram_via_nvml(index: int) -> tuple[int, int, int] | None:
     """Legge (total, used, free) in MB tramite NVML. None se non disponibile."""
-    if not _safe_nvml_init():
+    if not _is_nvml_ready():
         return None
     try:
         handle = pynvml.nvmlDeviceGetHandleByIndex(index)
@@ -151,8 +178,6 @@ def _read_vram_via_nvml(index: int) -> tuple[int, int, int] | None:
     except Exception as exc:  # noqa: BLE001
         logger.warning("Lettura VRAM NVML fallita per GPU %d: %s", index, exc)
         return None
-    finally:
-        _safe_nvml_shutdown()
 
 
 def _read_vram_via_torch(index: int) -> tuple[int, int, int]:

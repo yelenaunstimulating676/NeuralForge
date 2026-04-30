@@ -32,8 +32,16 @@ async def lifespan(_: FastAPI):
     logger.info("NeuralForge v%s — startup", __version__)
     settings.ensure_directories()
     init_db()
+
+    # Inizializza NVML una volta sola per tutta la vita dell'app.
+    from core.memory import init_nvml, shutdown_nvml
+    init_nvml()
+
     logger.info("Server pronto su http://%s:%d", settings.host, settings.port)
     yield
+
+    # Shutdown ordinato
+    shutdown_nvml()
     logger.info("NeuralForge — shutdown")
 
 

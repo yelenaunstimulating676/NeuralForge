@@ -3,6 +3,7 @@
  */
 
 import { Server, CheckCircle2, XCircle } from 'lucide-react'
+import { formatInt } from '../utils/format'
 
 export default function SystemCard({ info }) {
   return (
@@ -40,7 +41,7 @@ export default function SystemCard({ info }) {
             </span>
           }
         />
-        <Row label="GPU rilevate" value={info.gpu_count} />
+        <Row label="GPU rilevate" value={formatInt(info.gpu_count)} />
       </dl>
     </div>
   )
