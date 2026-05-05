@@ -86,3 +86,40 @@ export const fetchJob = (jobId) =>
 
 export const cancelJob = (jobId) =>
   api.delete(`/api/models/jobs/${jobId}`).then((r) => r.data)
+
+// ===== Dataset =====
+
+export const uploadDatasetFile = (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return api
+    .post('/api/dataset/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    .then((r) => r.data)
+}
+
+export const analyzeUpload = (uploadId) =>
+  api.post(`/api/dataset/upload/${uploadId}/analyze`).then((r) => r.data)
+
+export const previewUpload = (uploadId, body) =>
+  api.post(`/api/dataset/upload/${uploadId}/preview`, body).then((r) => r.data)
+
+export const saveUploadAsDataset = (uploadId, body) =>
+  api.post(`/api/dataset/upload/${uploadId}/save`, body).then((r) => r.data)
+
+export const fetchDatasets = () =>
+  api.get('/api/dataset').then((r) => r.data)
+
+export const fetchDataset = (id) =>
+  api.get(`/api/dataset/${id}`).then((r) => r.data)
+
+export const fetchDatasetExamples = (id, limit = 10) =>
+  api
+    .get(`/api/dataset/${id}/examples`, { params: { limit } })
+    .then((r) => r.data)
+
+export const deleteDataset = (id, removeFiles = true) =>
+  api
+    .delete(`/api/dataset/${id}`, { params: { remove_files: removeFiles } })
+    .then((r) => r.data)

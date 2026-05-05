@@ -212,3 +212,142 @@ class DeleteResponseSchema(BaseModel):
     deleted: bool
     id: int | None = None
     message: str | None = None
+    
+
+# ===========================================================================
+# Dataset domain (M3)
+# ===========================================================================
+
+
+class UploadResponseSchema(BaseModel):
+    """Response a POST /api/dataset/upload."""
+
+    upload_id: str
+    filename: str
+    size_bytes: int
+    extension: str
+
+
+class SectionPreviewSchema(BaseModel):
+    """Preview di una Section (max 5 mostrate)."""
+
+    title: str | None
+    text_preview: str = Field(description="Primi 200 chars del testo della sezione.")
+    metadata: dict
+
+
+class ExtractedDocumentSchema(BaseModel):
+    """Riassunto di un ExtractedDocument per la UI."""
+
+    source_format: str
+    char_count: int
+    section_count: int
+    metadata: dict
+    sections: list[SectionPreviewSchema]
+
+
+class DetectionResultSchema(BaseModel):
+    """Risultato del Content Detector."""
+
+    content_type: str
+    confidence: float
+    scores: dict[str, float]
+    indicators: list[str]
+
+
+class AnalyzeResponseSchema(BaseModel):
+    """Response a POST /api/dataset/upload/{id}/analyze."""
+
+    upload_id: str
+    extracted: ExtractedDocumentSchema
+    detection: DetectionResultSchema
+
+
+class ChunkerConfigSchema(BaseModel):
+    """Override dei parametri Chunker (tutti opzionali)."""
+
+    target_chars: int | None = Field(default=None, ge=100, le=8192)
+    overlap_chars: int | None = Field(default=None, ge=0, le=2048)
+    min_chunk_chars: int | None = Field(default=None, ge=50, le=4096)
+    max_chunk_chars: int | None = Field(default=None, ge=500, le=16384)
+
+
+class ConverterConfigSchema(BaseModel):
+    """Override dei parametri Converter."""
+
+    examples_per_narrative_chunk: int | None = Field(default=None, ge=1, le=5)
+    template_language: str | None = Field(default=None, description="'it' o 'en'")
+    min_chars: int | None = Field(default=None, ge=20, le=2048)
+    min_output_chars: int | None = Field(default=None, ge=10, le=512)
+
+
+class ValidatorConfigSchema(BaseModel):
+    """Override dei parametri Validator."""
+
+    min_output_chars: int | None = Field(default=None, ge=10, le=512)
+    max_output_chars: int | None = Field(default=None, ge=100, le=32768)
+    max_total_chars: int | None = Field(default=None, ge=200, le=65536)
+    enable_fuzzy_dedup: bool | None = None
+    fuzzy_threshold: float | None = Field(default=None, gt=0.0, le=1.0)
+
+
+class PreviewRequestSchema(BaseModel):
+    """Body POST /api/dataset/upload/{id}/preview."""
+
+    content_type_override: str | None = Field(
+        default=None,
+        description="Forza un ContentType (es. 'narrative'). Default: usa detection.",
+    )
+    chunker_config: ChunkerConfigSchema = Field(default_factory=ChunkerConfigSchema)
+    converter_config: ConverterConfigSchema = Field(default_factory=ConverterConfigSchema)
+    max_examples: int = Field(default=10, ge=1, le=50)
+
+
+class InstructionExampleSchema(BaseModel):
+    """Esempio di instruction tuning."""
+
+    instruction: str
+    input: str
+    output: str
+    metadata: dict
+
+
+class PreviewResponseSchema(BaseModel):
+    """Response a POST /api/dataset/upload/{id}/preview."""
+
+    upload_id: str
+    content_type: str
+    examples: list[InstructionExampleSchema]
+    total_chunks: int
+    total_examples_estimated: int = Field(
+        description="Stima totale esempi se si processasse l'intero documento."
+    )
+
+
+class SaveDatasetRequestSchema(BaseModel):
+    """Body POST /api/dataset/upload/{id}/save."""
+
+    name: str = Field(min_length=1, max_length=255)
+    content_type_override: str | None = None
+    chunker_config: ChunkerConfigSchema = Field(default_factory=ChunkerConfigSchema)
+    converter_config: ConverterConfigSchema = Field(default_factory=ConverterConfigSchema)
+    validator_config: ValidatorConfigSchema = Field(default_factory=ValidatorConfigSchema)
+
+
+class DatasetSchema(BaseModel):
+    """Dataset salvato."""
+
+    id: int
+    name: str
+    source_file: str | None
+    file_path: str
+    num_examples: int
+    format: str
+    stats: dict | None = Field(default=None, description="stats_json parsato.")
+    created_at: str
+
+
+class SaveDatasetResponseSchema(BaseModel):
+    """Response a POST /api/dataset/upload/{id}/save."""
+
+    dataset: DatasetSchema

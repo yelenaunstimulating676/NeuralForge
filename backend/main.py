@@ -33,9 +33,13 @@ async def lifespan(_: FastAPI):
     settings.ensure_directories()
     init_db()
 
-    # Inizializza NVML una volta sola per tutta la vita dell'app.
+# Inizializza NVML una volta sola per tutta la vita dell'app.
     from core.memory import init_nvml, shutdown_nvml
     init_nvml()
+
+    # Cleanup upload temporanei da run precedenti
+    from core.dataset.uploads import upload_manager
+    upload_manager.cleanup_all()
 
     logger.info("Server pronto su http://%s:%d", settings.host, settings.port)
     yield
@@ -88,10 +92,11 @@ def root() -> JSONResponse:
 
 
 # Routers
-from api import models, system
+from api import dataset, models, system
 
 app.include_router(system.router)
 app.include_router(models.router)
+app.include_router(dataset.router)
 
 
 if __name__ == "__main__":

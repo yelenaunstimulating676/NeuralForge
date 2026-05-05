@@ -365,6 +365,11 @@ class TestDeleteModel:
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# validate_hf_repo_exists (mockato — niente network)
+# ---------------------------------------------------------------------------
+
+
 class TestValidateHfRepoExists:
     def test_invalid_format_raises_before_network(self):
         from core.model_registry import validate_hf_repo_exists
@@ -391,12 +396,15 @@ class TestValidateHfRepoExists:
         with pytest.raises(HFRepoNotAccessibleError, match="non trovato"):
             model_registry.validate_hf_repo_exists("user/nope")
 
-    def test_gated_repo_raises(self, monkeypatch):
-        """Mocka HfApi.model_info per simulare repo gated.
+    def test_gated_repo_returns_requires_token(self, monkeypatch):
+        """
+        Repo gated senza token: la funzione NON solleva eccezione, ma
+        ritorna dict con `gated=True, requires_token=True` per permettere
+        alla UI di mostrare un warning informativo.
 
         IMPORTANTE: GatedRepoError eredita da RepositoryNotFoundError in
         huggingface_hub. L'ordine dei `except` nel codice di produzione
-        DEVE quindi catturare GatedRepoError prima.
+        DEVE catturare GatedRepoError prima.
         """
         from huggingface_hub.errors import GatedRepoError
 
@@ -411,5 +419,32 @@ class TestValidateHfRepoExists:
         monkeypatch.setattr("huggingface_hub.HfApi.__init__", fake_init)
         monkeypatch.setattr("huggingface_hub.HfApi.model_info", fake_model_info)
 
-        with pytest.raises(HFRepoNotAccessibleError, match="gated"):
-            model_registry.validate_hf_repo_exists("google/gemma-2-2b")
+        result = model_registry.validate_hf_repo_exists("google/gemma-2-2b")
+        assert result["gated"] is True
+        assert result["requires_token"] is True
+        assert result["id"] == "google/gemma-2-2b"
+
+    def test_public_repo_returns_not_gated(self, monkeypatch):
+        """Repo pubblico standard: gated=False, requires_token=False."""
+        from core import model_registry
+
+        class FakeModelInfo:
+            id = "Qwen/Qwen2.5-0.5B"
+            tags = ["transformers", "safetensors"]
+            siblings = [object()] * 10
+            gated = False
+
+        def fake_init(self, token=None):
+            self.token = token
+
+        def fake_model_info(self, repo):
+            return FakeModelInfo()
+
+        monkeypatch.setattr("huggingface_hub.HfApi.__init__", fake_init)
+        monkeypatch.setattr("huggingface_hub.HfApi.model_info", fake_model_info)
+
+        result = model_registry.validate_hf_repo_exists("Qwen/Qwen2.5-0.5B")
+        assert result["gated"] is False
+        assert result["requires_token"] is False
+        assert result["siblings_count"] == 10
+        assert "transformers" in result["tags"]
