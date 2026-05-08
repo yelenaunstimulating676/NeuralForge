@@ -205,11 +205,13 @@ def _resolve_dataset(session: Session, dataset_id: int) -> DatasetRow:
 
 def _create_training_run_row(
     session: Session,
+    run_id: str,
     base_model_id: int,
     dataset_id: int,
     config: TrainingConfig,
 ) -> TrainingRun:
     row = TrainingRun(
+        run_id=run_id,
         base_model_id=base_model_id,
         dataset_id=dataset_id,
         status="pending",
@@ -310,7 +312,7 @@ def run_training(
 
     # 2. Crea record TrainingRun in DB (status=pending)
     run_db = _create_training_run_row(
-        session, config.base_model_id, config.dataset_id, config
+        session, run_id, config.base_model_id, config.dataset_id, config
     )
 
     # 3. Configura cancellazione

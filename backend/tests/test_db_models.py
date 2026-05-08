@@ -112,6 +112,7 @@ def test_training_run_with_relationships(session):
     session.commit()
 
     run = TrainingRun(
+        run_id="test-run-001",
         base_model_id=bm.id,
         dataset_id=ds.id,
         status="pending",
@@ -136,19 +137,20 @@ def test_cascade_delete_base_model(session):
     session.commit()
 
     run = TrainingRun(
+        run_id="test-run-002",
         base_model_id=bm.id,
         status="pending",
         config_json="{}",
     )
     session.add(run)
     session.commit()
-    run_id = run.id
+    run_db_id = run.id
 
     session.delete(bm)
     session.commit()
 
     # Run deve essere stato cancellato a cascata
-    assert session.get(TrainingRun, run_id) is None
+    assert session.get(TrainingRun, run_db_id) is None
 
 
 def test_finetuned_model_unique_per_run(session):
@@ -162,6 +164,7 @@ def test_finetuned_model_unique_per_run(session):
     session.commit()
 
     run = TrainingRun(
+        run_id="test-run-003",
         base_model_id=bm.id,
         status="completed",
         config_json="{}",

@@ -152,17 +152,34 @@ export default function TrainingLive() {
   const wsRef = useRef(null);
   const logsContainerRef = useRef(null);
 
-  // Carica db_id dal listing per poter cancellare
+// Carica db_id e metadata cercando per run_id (ora persistito in DB)
+  const [runMeta, setRunMeta] = useState(null);
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const runs = await fetchTrainingRuns();
         if (cancelled) return;
-        // Cerco il run con la mia config — ma run_id non è in DB.
-        // Strategia semplice: prendo il più recente (è quello appena creato)
-        if (runs && runs.length > 0) {
-          setDbId(runs[0].id);
+        const match = (runs || []).find((r) => r.run_id === runId);
+        if (match) {
+          setDbId(match.id);
+          setRunMeta(match);
+          // Se il run è già completato in DB, popola anche stato + history
+          if (match.status !== "running" && match.status !== "pending") {
+            setStatus(match.status);
+            if (match.metrics) {
+              setStepLogs(match.metrics.history || []);
+              if (!finishedEvent) {
+                setFinishedEvent({
+                  status: match.status,
+                  final_loss: match.metrics.final_loss,
+                  total_steps: match.metrics.total_steps,
+                  elapsed_seconds: match.metrics.elapsed_seconds,
+                  error: match.error_message,
+                });
+              }
+            }
+          }
         }
       } catch (e) {
         console.warn("Impossibile recuperare db_id:", e);

@@ -150,3 +150,23 @@ M8 ⏳ Polish & onboarding
 M6 — Inference & Comparison: scegli un FT model, scrivi un prompt, vedi la risposta del modello base vs fine-tunato side-by-side. Pezzo "WOW" perché vedi finalmente il risultato del fine-tuning. ~3h.
 M7 — Export GGUF: per chi vuole esportare e usare il modello su llama.cpp/Ollama. Conversione one-shot. ~1.5h.
 M8 — Polish: onboarding wizard al primo avvio, README, MIT license, error boundaries, refinement UX. ~2h.
+
+
+M0 ✅ Bootstrap full-stack
+M1 ✅ System Detector
+M2 ✅ Model Manager
+M3 ✅ Dataset Engine
+M4 ✅ Training Engine
+M5 ✅ Training API + Live Monitor + Storico       ← appena completato!
+M6 ⏭️  Inference & Comparison                       ← riprenderemo qui
+M7 ⏳ Export GGUF
+M8 ⏳ Polish & onboarding
+
+Risorse pronte per M6:
+  • SmolLM2-135M base model in data/models/
+  • Dataset "Capitali Europee Test" (5 esempi)
+  • 6 FineTunedModel disponibili (loss da 0.11 a 0.47)
+  • Schema DB con run_id persistito
+  • Tutto end-to-end funzionante e testato
+
+Stato test backend: 345 passing

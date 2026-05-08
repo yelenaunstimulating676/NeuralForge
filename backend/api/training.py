@@ -100,6 +100,7 @@ def _row_to_run_schema(
 
     return TrainingRunSchema(
         id=run.id,
+        run_id=run.run_id,
         base_model_id=run.base_model_id,
         base_model_name=base_name,
         dataset_id=run.dataset_id,

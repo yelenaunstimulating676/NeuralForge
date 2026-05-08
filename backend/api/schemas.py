@@ -405,6 +405,7 @@ class TrainingRunSchema(BaseModel):
     """Dettaglio di un TrainingRun dal DB."""
 
     id: int
+    run_id: str
     base_model_id: int
     base_model_name: str | None = None
     dataset_id: int | None

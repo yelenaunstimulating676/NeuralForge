@@ -149,7 +149,7 @@ class Dataset(Base):
 
 class TrainingRun(Base):
     """
-    Esecuzione di training (placeholder per M5).
+    Esecuzione di training.
 
     Stati:
         - 'pending'    → creato ma non ancora avviato
@@ -162,6 +162,11 @@ class TrainingRun(Base):
     __tablename__ = "training_runs"
 
     id: Mapped[int] = mapped_column(PKType, primary_key=True, autoincrement=True)
+
+    # ID semantico (es. "train-20260508-e56e27"), unique per query
+    run_id: Mapped[str] = mapped_column(
+        String(64), nullable=False, unique=True, index=True
+    )
 
     # FK
     base_model_id: Mapped[int] = mapped_column(
