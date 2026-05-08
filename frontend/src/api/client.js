@@ -123,3 +123,37 @@ export const deleteDataset = (id, removeFiles = true) =>
   api
     .delete(`/api/dataset/${id}`, { params: { remove_files: removeFiles } })
     .then((r) => r.data)
+
+    // ===== Training =====
+export const fetchTrainingRuns = () =>
+  api.get('/api/training/runs').then((r) => r.data)
+
+export const fetchTrainingRun = (id) =>
+  api.get(`/api/training/runs/${id}`).then((r) => r.data)
+
+export const startTraining = (config) =>
+  api.post('/api/training/start', config).then((r) => r.data)
+
+export const estimateTraining = (body) =>
+  api.post('/api/training/estimate', body).then((r) => r.data)
+
+export const cancelTrainingRun = (runDbId) =>
+  api.post(`/api/training/runs/${runDbId}/cancel`).then((r) => r.data)
+
+export const deleteTrainingRun = (runDbId, removeFiles = true) =>
+  api
+    .delete(`/api/training/runs/${runDbId}`, { params: { remove_files: removeFiles } })
+    .then((r) => r.data)
+
+export const fetchTrainingJobs = () =>
+  api.get('/api/training/jobs').then((r) => r.data)
+
+export const fetchTrainingJob = (jobId) =>
+  api.get(`/api/training/jobs/${jobId}`).then((r) => r.data)
+
+// URL WebSocket per stream live
+export const trainingWebSocketUrl = (runId) => {
+  const httpBase = baseURL
+  const wsBase = httpBase.replace(/^http/, 'ws')
+  return `${wsBase}/api/training/ws/${runId}`
+}

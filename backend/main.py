@@ -40,6 +40,11 @@ async def lifespan(_: FastAPI):
     # Cleanup upload temporanei da run precedenti
     from core.dataset.uploads import upload_manager
     upload_manager.cleanup_all()
+    
+    # Bind broadcaster all'event loop principale (per publish cross-thread)
+    import asyncio as _asyncio
+    from core.training.broadcaster import broadcaster
+    broadcaster.bind_loop(_asyncio.get_running_loop())
 
     logger.info("Server pronto su http://%s:%d", settings.host, settings.port)
     yield
@@ -92,11 +97,12 @@ def root() -> JSONResponse:
 
 
 # Routers
-from api import dataset, models, system
+from api import dataset, models, system, training
 
 app.include_router(system.router)
 app.include_router(models.router)
 app.include_router(dataset.router)
+app.include_router(training.router)
 
 
 if __name__ == "__main__":

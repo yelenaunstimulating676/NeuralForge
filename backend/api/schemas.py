@@ -351,3 +351,107 @@ class SaveDatasetResponseSchema(BaseModel):
     """Response a POST /api/dataset/upload/{id}/save."""
 
     dataset: DatasetSchema
+    
+    # ===========================================================================
+# Training domain (M5)
+# ===========================================================================
+
+
+class TrainingStartRequestSchema(BaseModel):
+    """Configurazione di un training (input lato API)."""
+
+    base_model_id: int
+    dataset_id: int
+
+    num_epochs: int = Field(default=3, ge=1, le=100)
+    per_device_batch_size: int = Field(default=2, ge=1, le=32)
+    grad_accum_steps: int = Field(default=2, ge=1, le=64)
+    max_grad_norm: float = Field(default=1.0, gt=0, le=10.0)
+    log_every_n_steps: int = Field(default=1, ge=1, le=100)
+    max_steps: int = Field(default=0, ge=0, le=100_000)
+
+    learning_rate: float = Field(default=2e-4, gt=0, le=1e-2)
+    weight_decay: float = Field(default=0.01, ge=0, le=1.0)
+    use_8bit_optimizer: bool = True
+
+    warmup_ratio: float = Field(default=0.03, ge=0.0, le=0.5)
+    min_lr_ratio: float = Field(default=0.0, ge=0.0, le=1.0)
+
+    max_seq_length: int = Field(default=1024, ge=64, le=8192)
+    train_on_response_only: bool = True
+
+    lora_r: int = Field(default=16, ge=1, le=128)
+    lora_alpha: int = Field(default=32, ge=1, le=256)
+    lora_dropout: float = Field(default=0.05, ge=0.0, lt=1.0)
+
+    use_4bit: bool = True
+    compute_dtype: str = Field(default="bfloat16", description="'bfloat16' o 'float16'")
+
+    save_every_n_steps: int = Field(default=0, ge=0, le=10_000)
+    keep_last_n: int = Field(default=3, ge=1, le=20)
+
+    finetuned_name: str | None = Field(default=None, max_length=255)
+
+
+class TrainingStartResponseSchema(BaseModel):
+    """Risposta a POST /api/training/start."""
+
+    run_id: str = Field(description="ID semantico del run, es. train-20260507-a3f2")
+    job_id: str = Field(description="ID del job nel JobManager (per status/cancel)")
+    training_run_db_id: int
+
+
+class TrainingRunSchema(BaseModel):
+    """Dettaglio di un TrainingRun dal DB."""
+
+    id: int
+    base_model_id: int
+    base_model_name: str | None = None
+    dataset_id: int | None
+    dataset_name: str | None = None
+    status: str
+    config: dict | None = None
+    metrics: dict | None = None
+    error_message: str | None = None
+    started_at: str | None = None
+    finished_at: str | None = None
+    created_at: str
+
+
+class TrainingEstimateRequestSchema(BaseModel):
+    """Body POST /api/training/estimate."""
+
+    base_model_id: int
+    dataset_id: int
+    num_epochs: int = Field(default=3, ge=1)
+    per_device_batch_size: int = Field(default=2, ge=1)
+    grad_accum_steps: int = Field(default=2, ge=1)
+    max_seq_length: int = Field(default=1024, ge=64)
+    lora_r: int = Field(default=16, ge=1)
+    use_4bit: bool = True
+
+
+class TrainingEstimateResponseSchema(BaseModel):
+    """Stima euristica pre-training (per UI)."""
+
+    estimated_vram_mb: int
+    estimated_time_seconds: int
+    total_steps: int
+    steps_per_epoch: int
+    trainable_params_estimated: int
+    notes: list[str] = Field(default_factory=list)
+
+
+class TrainingJobSchema(BaseModel):
+    """Job attivo del JobManager filtrato per kind=training."""
+
+    job_id: str
+    run_id: str | None
+    training_run_db_id: int | None
+    status: str
+    progress: float
+    progress_message: str
+    error: str | None = None
+    created_at: str
+    started_at: str | None = None
+    finished_at: str | None = None

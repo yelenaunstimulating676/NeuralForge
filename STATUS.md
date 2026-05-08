@@ -75,10 +75,78 @@ E tutto questo in 19.4 secondi totali per 60 step di update. Su hardware reale, 
 M0 ✅ Bootstrap full-stack
 M1 ✅ System Detector
 M2 ✅ Model Manager
-M3 ✅ Dataset Engine  
-M4 ✅ Training Engine ← appena completato!
-M5 ⏭️  Training API + WebSocket Live Monitor
+M3 ✅ Dataset Engine
+M4 ✅ Training Engine            ← test: 323 passed + E2E reale verificato
+M5 ⏭️  Training API + Live Monitor   ← riprenderemo qui
 M6 ⏳ Inference & comparison
 M7 ⏳ Export GGUF
 M8 ⏳ Polish & onboarding
-Stiamo a 5/9 milestone. Da qui in poi le cose si fanno meno pesanti tecnicamente: M5 è UI + WebSocket "sopra" M4, M6 è inference (più semplice del training), M7 è una conversione one-shot, M8 è polish.
+
+Parking lot:
+  • GPU Benchmark on-demand
+  • Estimation card pre-training (VRAM/tempo)
+  • ETA dinamica training (in M5 magari)
+  • Smart converter mode con LLM (per narrative dataset più ricchi)
+  • OCR per PDF scansionati
+  • Confidence detector più furba
+
+Cose da considerare in M5:
+  • WebSocket per loss live
+  • JobManager (riuso quello di M2) per start/cancel training
+  • Estimation card che usa il system detector di M1
+  • Charts via recharts (già installato per il dashboard)
+
+---
+
+# NeuralForge — Stato sviluppo
+
+## Completato
+- M0: Backend FastAPI + frontend Vite/React/Tailwind4 + healthcheck
+- M1: System Detector (GPU/VRAM live, training config suggestion)
+- M2: Model Manager (whitelist 18 modelli, download async, custom HF, gated detection)
+- M3: Dataset Engine (PDF/CSV/TXT/JSON/JSONL/DOCX → Alpaca instruction tuning, wizard 3-step)
+- M4: Training Engine (QLoRA + AdamW8bit + custom PyTorch loop + checkpoint, E2E verificato)
+
+## In corso
+- M5: Training API + Live Monitor (WebSocket + chart live)
+
+## Stato test
+- 323 test passing
+- 1 training E2E reale verificato (SmolLM2-135M, loss 3.43→0.77 in 19s)
+
+## Comandi rapidi
+- Backend: `cd backend && .\venv\Scripts\activate && python -m uvicorn main:app --reload`
+- Frontend: `cd frontend && npm run dev`
+- Tests: `cd backend && pytest tests/ -v`
+- Test E2E training: `python scripts/test_training_e2e.py`
+- URL: http://127.0.0.1:5173 (frontend) — http://127.0.0.1:8000/docs (API)
+
+🏆 M5 COMPLETATO
+M5.1 ✅ EventBroadcaster (340 test)
+M5.2 ✅ API REST /api/training/* (345 test)  
+M5.3 ✅ WebSocket /ws/{run_id}
+M5.4 ✅ Frontend Training page (config + estimation + start)
+M5.5 ✅ Frontend Live Monitor (chart live + WebSocket + cancel)
+Statistiche M5:
+
++5 test mockati (estimator)
+~1500 righe di codice nuovo (backend training API + frontend Training/TrainingLive)
+WebSocket end-to-end funzionante con thread bridging via run_coroutine_threadsafe
+Stream di eventi live dal training thread → broadcaster → WebSocket → React state → recharts
+
+
+🎯 Stato roadmap
+M0 ✅ Bootstrap full-stack
+M1 ✅ System Detector
+M2 ✅ Model Manager
+M3 ✅ Dataset Engine
+M4 ✅ Training Engine
+M5 ✅ Training API + Live Monitor   ← appena fatto!
+M6 ⏭️  Inference & comparison
+M7 ⏳ Export GGUF
+M8 ⏳ Polish & onboarding
+6/9 milestone fatte. Da qui in poi:
+
+M6 — Inference & Comparison: scegli un FT model, scrivi un prompt, vedi la risposta del modello base vs fine-tunato side-by-side. Pezzo "WOW" perché vedi finalmente il risultato del fine-tuning. ~3h.
+M7 — Export GGUF: per chi vuole esportare e usare il modello su llama.cpp/Ollama. Conversione one-shot. ~1.5h.
+M8 — Polish: onboarding wizard al primo avvio, README, MIT license, error boundaries, refinement UX. ~2h.
