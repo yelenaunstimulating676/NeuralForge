@@ -456,3 +456,73 @@ class TrainingJobSchema(BaseModel):
     created_at: str
     started_at: str | None = None
     finished_at: str | None = None
+    
+    
+    # ===========================================================================
+# Inference (M6)
+# ===========================================================================
+
+
+class GenerationParamsSchema(BaseModel):
+    """Parametri di sampling per generate."""
+
+    max_new_tokens: int = Field(default=256, ge=1, le=4096)
+    temperature: float = Field(default=0.7, gt=0.0, le=5.0)
+    top_p: float = Field(default=0.9, gt=0.0, le=1.0)
+    top_k: int = Field(default=50, ge=0)
+    repetition_penalty: float = Field(default=1.1, ge=1.0, le=2.0)
+    do_sample: bool = True
+
+
+class InferenceGenerateRequestSchema(BaseModel):
+    """Body POST /api/inference/generate."""
+    
+    model_config = ConfigDict(protected_namespaces=())
+
+    prompt: str = Field(min_length=1, max_length=10_000)
+    # Specifica un solo modello per generazione
+    model_kind: str = Field(description="'base' | 'ft'")
+    model_id: int
+    params: GenerationParamsSchema = Field(default_factory=GenerationParamsSchema)
+
+
+class InferenceGenerateResponseSchema(BaseModel):
+    """Risposta a POST /api/inference/generate."""
+    
+    model_config = ConfigDict(protected_namespaces=())
+
+    text: str
+    tokens_generated: int
+    elapsed_seconds: float
+    throughput_tokens_per_sec: float
+    finish_reason: str
+    model_key: str
+    model_display_name: str
+
+
+class LoadedModelSchema(BaseModel):
+    """Modello attualmente in cache (per GET /models/loaded)."""
+    
+    model_config = ConfigDict(protected_namespaces=())
+
+    key: str
+    kind: str
+    model_id: int
+    display_name: str
+    base_model_id: int
+    has_adapter: bool
+
+
+class AvailableModelSchema(BaseModel):
+    """Modello selezionabile per inference (base o ft)."""
+    
+    model_config = ConfigDict(protected_namespaces=())
+
+    key: str                    # "base:N" o "ft:N"
+    kind: str                   # "base" | "ft"
+    model_id: int
+    display_name: str
+    base_model_id: int          # per i ft, il base sottostante
+    base_model_name: str | None = None
+    is_loaded: bool             # già in cache?
+    metadata: dict | None = None  # info extra (loss finale per ft, etc.)

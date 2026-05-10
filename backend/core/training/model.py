@@ -440,3 +440,88 @@ def prepare_model_for_training(
         tokenizer=tokenizer,
         trainable_info=info,
     )
+    
+    
+    # ---------------------------------------------------------------------------
+# Inference variant
+# ---------------------------------------------------------------------------
+
+
+def apply_lora_for_inference(model, adapter_path: Path | str):
+    """
+    Carica un adapter LoRA su un base model in modalità inference.
+
+    Args:
+        model: base model già caricato (idealmente quantizzato).
+        adapter_path: path locale alla cartella che contiene
+            adapter_model.safetensors + adapter_config.json.
+
+    Returns:
+        PeftModel con l'adapter caricato e impostato in eval mode.
+
+    Raises:
+        ModelLoadError: errori di caricamento adapter.
+    """
+    from peft import PeftModel
+
+    path = str(adapter_path)
+    if not Path(path).exists():
+        raise ModelLoadError(f"Adapter path non esiste: {path}")
+
+    try:
+        peft_model = PeftModel.from_pretrained(model, path)
+    except Exception as exc:  # noqa: BLE001
+        raise ModelLoadError(
+            f"Impossibile caricare adapter LoRA da {path}: {exc}"
+        ) from exc
+
+    peft_model.eval()
+    logger.info("Adapter LoRA caricato per inference da %s", path)
+    return peft_model
+
+
+def prepare_base_for_inference(
+    model_path: Path | str,
+    quant_config: QuantizationConfig | None = None,
+) -> LoadedModel:
+    """
+    Carica solo il base model + tokenizer per inference.
+
+    A differenza di prepare_model_for_training:
+      - NON applica `prepare_model_for_kbit_training` (no gradient setup)
+      - NON applica LoRA
+      - Mette il modello in `eval()` mode
+
+    Returns:
+        LoadedModel con `trainable_info` riempito a 0 (no LoRA).
+    """
+    tokenizer = load_tokenizer(model_path)
+    base_model = load_quantized_model(model_path, quant_config)
+    base_model.eval()
+
+    info = TrainableParamsInfo(
+        trainable_params=0,
+        total_params=sum(p.numel() for p in base_model.parameters()),
+        trainable_percent=0.0,
+    )
+    return LoadedModel(model=base_model, tokenizer=tokenizer, trainable_info=info)
+
+
+def prepare_ft_for_inference(
+    base_model_path: Path | str,
+    adapter_path: Path | str,
+    quant_config: QuantizationConfig | None = None,
+) -> LoadedModel:
+    """
+    Carica base + adapter LoRA per inference.
+    """
+    tokenizer = load_tokenizer(base_model_path)
+    base_model = load_quantized_model(base_model_path, quant_config)
+    peft_model = apply_lora_for_inference(base_model, adapter_path)
+
+    info = TrainableParamsInfo(
+        trainable_params=0,
+        total_params=sum(p.numel() for p in peft_model.parameters()),
+        trainable_percent=0.0,
+    )
+    return LoadedModel(model=peft_model, tokenizer=tokenizer, trainable_info=info)

@@ -169,4 +169,37 @@ Risorse pronte per M6:
   • Schema DB con run_id persistito
   • Tutto end-to-end funzionante e testato
 
-Stato test backend: 345 passing
+M0 ✅ Bootstrap full-stack
+M1 ✅ System Detector
+M2 ✅ Model Manager
+M3 ✅ Dataset Engine
+M4 ✅ Training Engine
+M5 ✅ Training API + Live Monitor + Storico
+M6 ✅ Inference & Comparison           ← appena chiuso!
+M7 ⏭️  Export GGUF                       ← riprenderemo qui
+M8 ⏳ Polish & onboarding
+
+Parking lot:
+  • M6.3 streaming WebSocket
+  • M6.5 comparazione 3 modelli  
+  • Calibrazione qualitativa (dataset più grandi, modelli migliori)
+
+Stato test backend: 381 passing
+Risorse on-disk: SmolLM2-135M base + 6 FT models + dataset Capitali (5 esempi)
+
+Anteprima M7
+Export GGUF — il formato per portare i tuoi FT models fuori da NeuralForge: in Ollama, LM Studio, Jan, GPT4All, app mobili. Cuore della pipeline:
+
+Merge LoRA + base → modello "completo" in safetensors
+Conversione safetensors → GGUF via convert-hf-to-gguf.py di llama.cpp
+Quantizzazione del GGUF in formati come Q4_K_M (4-bit, ~50% size), Q5_K_M (più qualità), Q8_0 (8-bit, qualità quasi perfetta)
+
+Decisione tecnica chiave da concordare a inizio M7: come fornire llama.cpp. Tre opzioni:
+
+Bundle pre-compilato binari Windows nel repo (~50MB)
+Wrapper Python gguf-py o llama-cpp-python (più leggero ma incompleto per conversione)
+Far installare l'utente manualmente e cercare nel PATH
+
+Vediamo quando riprendi.
+Frontend M7: aggiungeremo bottone "Esporta GGUF" sulle card dei FT model in /models, con scelta della quantizzazione e progress live (la conversione prende 30-120s).
+Stima totale M7: ~2h.

@@ -6,6 +6,7 @@ import Training from './pages/Training'
 import TrainingLive from './pages/TrainingLive'
 import Monitor from './pages/Monitor'
 import Models from './pages/Models'
+import Inference from './pages/Inference'
 export default function App() {
   return (
     <BrowserRouter>
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/training/live/:runId" element={<TrainingLive />} />
           <Route path="/monitor" element={<Monitor />} />
           <Route path="/models" element={<Models />} />
+          <Route path="/inference" element={<Inference />} />
         </Route>
       </Routes>
     </BrowserRouter>

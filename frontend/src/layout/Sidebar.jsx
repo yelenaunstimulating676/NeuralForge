@@ -10,6 +10,7 @@ import {
   Cpu,
   Activity,
   Boxes,
+  MessageSquare,
   Zap,
 } from 'lucide-react'
 
@@ -17,6 +18,7 @@ const links = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/dataset', label: 'Dataset', icon: Database },
   { to: '/training', label: 'Training', icon: Cpu },
+  { to: '/inference', label: 'Inference', icon: MessageSquare },
   { to: '/monitor', label: 'Monitor', icon: Activity },
   { to: '/models', label: 'Models', icon: Boxes },
 ]

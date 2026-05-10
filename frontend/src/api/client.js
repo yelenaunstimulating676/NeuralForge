@@ -135,3 +135,19 @@ export const trainingWebSocketUrl = (runId) => {
   const wsBase = httpBase.replace(/^http/, 'ws')
   return `${wsBase}/api/training/ws/${runId}`
 }
+
+// ===== Inference =====
+export const fetchAvailableModels = () =>
+  api.get('/api/inference/models/available').then((r) => r.data)
+
+export const fetchLoadedModels = () =>
+  api.get('/api/inference/models/loaded').then((r) => r.data)
+
+export const generateInference = (body) =>
+  api.post('/api/inference/generate', body, { timeout: 60000 }).then((r) => r.data)
+
+export const unloadModel = (key) =>
+  api.delete(`/api/inference/models/${key}`).then((r) => r.data)
+
+export const unloadAllModels = () =>
+  api.delete('/api/inference/models').then((r) => r.data)
