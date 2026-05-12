@@ -1,0 +1,5 @@
+{
+    "quantization":  "Q4_K_M",
+    "output_name":  "capitali_test_v1",
+    "ft_model_id":  3
+}

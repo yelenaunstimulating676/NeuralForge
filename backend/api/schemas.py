@@ -526,3 +526,128 @@ class AvailableModelSchema(BaseModel):
     base_model_name: str | None = None
     is_loaded: bool             # già in cache?
     metadata: dict | None = None  # info extra (loss finale per ft, etc.)
+    
+    
+    # ===========================================================================
+# Export (M7)
+# ===========================================================================
+
+
+class ExportStartRequestSchema(BaseModel):
+    """Body POST /api/export/start."""
+
+    model_config = ConfigDict(protected_namespaces=())
+
+    ft_model_id: int = Field(description="ID del FineTunedModel da esportare")
+    quantization: str = Field(default="Q4_K_M", description="Formato quantizzazione")
+    output_name: str | None = Field(
+        default=None,
+        max_length=128,
+        description="Nome file output (senza .gguf). Auto-generato se vuoto.",
+    )
+
+
+class ExportStartResponseSchema(BaseModel):
+    """Response a POST /api/export/start."""
+
+    job_id: str
+    ft_model_id: int
+    quantization: str
+    expected_filename: str
+
+
+class ExportJobSchema(BaseModel):
+    """Stato di un export job."""
+
+    job_id: str
+    kind: str
+    status: str
+    progress: float
+    message: str | None = None
+    created_at: str
+    started_at: str | None = None
+    finished_at: str | None = None
+    error: str | None = None
+    result: dict | None = None
+
+
+class ExportFileSchema(BaseModel):
+    """File .gguf su disco."""
+
+    filename: str
+    path: str
+    size_bytes: int
+    quantization: str
+    ft_name: str | None = None
+    created_at: str
+
+
+class QuantizationOptionSchema(BaseModel):
+    """Opzione di quantizzazione disponibile."""
+
+    value: str           # "Q4_K_M"
+    label: str           # "Q4_K_M — bilanciato (consigliato)"
+    description: str
+    is_default: bool
+    
+    # ===========================================================================
+# Export (M7)
+# ===========================================================================
+
+
+class ExportStartRequestSchema(BaseModel):
+    """Body POST /api/export/start."""
+
+    model_config = ConfigDict(protected_namespaces=())
+
+    ft_model_id: int = Field(description="ID del FineTunedModel da esportare")
+    quantization: str = Field(default="Q4_K_M", description="Formato quantizzazione")
+    output_name: str | None = Field(
+        default=None,
+        max_length=128,
+        description="Nome file output (senza .gguf). Auto-generato se vuoto.",
+    )
+
+
+class ExportStartResponseSchema(BaseModel):
+    """Response a POST /api/export/start."""
+
+    job_id: str
+    ft_model_id: int
+    quantization: str
+    expected_filename: str
+
+
+class ExportJobSchema(BaseModel):
+    """Stato di un export job."""
+
+    job_id: str
+    kind: str
+    status: str
+    progress: float
+    message: str | None = None
+    created_at: str
+    started_at: str | None = None
+    finished_at: str | None = None
+    error: str | None = None
+    result: dict | None = None
+
+
+class ExportFileSchema(BaseModel):
+    """File .gguf su disco."""
+
+    filename: str
+    path: str
+    size_bytes: int
+    quantization: str
+    ft_name: str | None = None
+    created_at: str
+
+
+class QuantizationOptionSchema(BaseModel):
+    """Opzione di quantizzazione disponibile."""
+
+    value: str
+    label: str
+    description: str
+    is_default: bool

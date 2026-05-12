@@ -151,3 +151,31 @@ export const unloadModel = (key) =>
 
 export const unloadAllModels = () =>
   api.delete('/api/inference/models').then((r) => r.data)
+
+// ===== Export (M7) =====
+export const fetchExportQuantizations = () =>
+  api.get('/api/export/quantizations').then((r) => r.data)
+
+export const startExport = (body) =>
+  api.post('/api/export/start', body).then((r) => r.data)
+
+export const fetchExportJobs = () =>
+  api.get('/api/export/jobs').then((r) => r.data)
+
+export const fetchExportJob = (jobId) =>
+  api.get(`/api/export/jobs/${jobId}`).then((r) => r.data)
+
+export const cancelExportJob = (jobId) =>
+  api.delete(`/api/export/jobs/${jobId}`).then((r) => r.data)
+
+export const fetchExportFiles = () =>
+  api.get('/api/export/files').then((r) => r.data)
+
+export const deleteExportFile = (filename) =>
+  api.delete(`/api/export/files/${filename}`).then((r) => r.data)
+
+// URL diretto per download (apriamo in nuova tab, no JS download)
+export const exportFileDownloadUrl = (filename) => {
+  const base = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000'
+  return `${base}/api/export/files/${encodeURIComponent(filename)}/download`
+}

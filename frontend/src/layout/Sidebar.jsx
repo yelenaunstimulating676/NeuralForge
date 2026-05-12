@@ -11,6 +11,7 @@ import {
   Activity,
   Boxes,
   MessageSquare,
+  Package,
   Zap,
 } from 'lucide-react'
 
@@ -21,6 +22,7 @@ const links = [
   { to: '/inference', label: 'Inference', icon: MessageSquare },
   { to: '/monitor', label: 'Monitor', icon: Activity },
   { to: '/models', label: 'Models', icon: Boxes },
+  { to: '/export', label: 'Export', icon: Package },
 ]
 
 export default function Sidebar() {

@@ -97,13 +97,14 @@ def root() -> JSONResponse:
 
 
 # Routers
-from api import dataset, inference, models, system, training
+from api import dataset, export, inference, models, system, training
 
 app.include_router(system.router)
 app.include_router(models.router)
 app.include_router(dataset.router)
 app.include_router(training.router)
 app.include_router(inference.router)
+app.include_router(export.router)
 
 
 if __name__ == "__main__":

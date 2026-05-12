@@ -203,3 +203,42 @@ Far installare l'utente manualmente e cercare nel PATH
 Vediamo quando riprendi.
 Frontend M7: aggiungeremo bottone "Esporta GGUF" sulle card dei FT model in /models, con scelta della quantizzazione e progress live (la conversione prende 30-120s).
 Stima totale M7: ~2h.
+
+Parking lot (post-M8 / v0.2.0):
+  • M6.3 streaming WebSocket (token-by-token)
+  • M6.5 comparazione 3 modelli (3 colonne invece di 2)
+  • Calibrazione qualitativa (dataset più grandi, modelli migliori)
+  • i18n: supporto multilingua (italiano + inglese, framework tipo react-i18next)
+  • Onboarding wizard al primo avvio (tour guidato delle 6 pagine)
+
+  Debt tecnico da sistemare in M8:
+  • Test M7.1: aggiornare per riflettere extraction multi-file (.dll + .exe)
+  • Forse: caching delle DLL fra versioni? (ora ogni LLAMACPP_VERSION = re-download completo)
+
+  🏆 M7 CHIUSO
+M7.1 ✅ LlamaCppManager (auto-download + cache + 13 test)
+M7.2 ✅ Pipeline export (merge + convert + quantize + 14 test)
+M7.3 ✅ API REST /api/export/* (start, jobs, files, quantizations)
+M7.4 ✅ Frontend Export (pagina, modal, progress live, scarica/elimina)
+Hai dimostrato end-to-end che NeuralForge produce file .gguf usabili in Ollama/LM Studio/llama.cpp.
+Il file da 100.6 MB sul disco è un GGUF Q4_K_M valido (magic number "GGUF" verificato). Puoi caricarlo in Ollama domani con un ollama create e usarlo come modello locale.
+
+🎯 Stato roadmap
+M0 ✅ Bootstrap full-stack
+M1 ✅ System Detector
+M2 ✅ Model Manager
+M3 ✅ Dataset Engine
+M4 ✅ Training Engine
+M5 ✅ Training API + Live Monitor + Storico
+M6 ✅ Inference & Comparison
+M7 ✅ Export GGUF           ← appena chiuso!
+M8 ⏳ Polish & onboarding
+
+Parking lot (v0.2.0):
+  • M6.3 streaming WebSocket token-by-token
+  • M6.5 comparazione 3 modelli
+  • i18n (italiano + inglese)
+  • Onboarding wizard
+  • Calibrazione qualitativa (dataset grandi)
+  • Cleanup test M7.1 (extraction multi-file)
+8/9 milestone fatte. Mancante: M8 — Polish & Onboarding.

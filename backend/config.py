@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     datasets_dir: str = "data/datasets"
     models_dir: str = "data/models"
     adapters_dir: str = "data/adapters"
+    exports_dir: str = "data/exports"
 
     @field_validator("log_level")
     @classmethod
@@ -82,9 +83,13 @@ class Settings(BaseSettings):
         return self._resolve(self.adapters_dir)
 
     @property
+    def exports_path(self) -> Path:
+        return self._resolve(self.exports_dir)
+
+    @property
     def log_file_path(self) -> Path:
         return self._resolve(self.log_file)
-
+    
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
@@ -105,6 +110,7 @@ class Settings(BaseSettings):
             self.datasets_path,
             self.models_path,
             self.adapters_path,
+            self.exports_path,
             self.log_file_path.parent,
         ):
             path.mkdir(parents=True, exist_ok=True)
