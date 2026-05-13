@@ -28,7 +28,7 @@ import {
   fetchTrainingRuns,
   cancelTrainingRun,
 } from "../api/client";
-
+import useDocumentTitle from "../hooks/useDocumentTitle";
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -45,7 +45,7 @@ function formatTime(seconds) {
 }
 
 function formatNumberShort(n) {
-  if (n == null) return "—";
+  if (n == null) return "-";
   if (Math.abs(n) >= 1000) return n.toFixed(0);
   if (Math.abs(n) >= 1) return n.toFixed(2);
   if (Math.abs(n) >= 0.001) return n.toFixed(4);
@@ -135,6 +135,7 @@ function MetricChart({ data, dataKey, color, label, yFormatter }) {
 // ---------------------------------------------------------------------------
 
 export default function TrainingLive() {
+  useDocumentTitle("Training Live");
   const { runId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -391,33 +392,33 @@ export default function TrainingLive() {
         <StatBox
           icon={Hash}
           label="Step"
-          value={lastStep ? lastStep.step : "—"}
+          value={lastStep ? lastStep.step : "-"}
           sublabel={totalSteps ? `di ${totalSteps}` : null}
         />
         <StatBox
           icon={TrendingUp}
           label="Loss"
-          value={lastStep ? lastStep.loss.toFixed(4) : "—"}
+          value={lastStep ? lastStep.loss.toFixed(4) : "-"}
         />
         <StatBox
           icon={Zap}
           label="Learning rate"
-          value={lastStep ? formatNumberShort(lastStep.learning_rate) : "—"}
+          value={lastStep ? formatNumberShort(lastStep.learning_rate) : "-"}
         />
         <StatBox
           icon={Cpu}
           label="VRAM"
-          value={lastStep ? `${Math.round(lastStep.vram_used_mb)} MB` : "—"}
+          value={lastStep ? `${Math.round(lastStep.vram_used_mb)} MB` : "-"}
         />
         <StatBox
           icon={Activity}
           label="Throughput"
-          value={lastStep ? `${Math.round(lastStep.throughput_tokens_per_sec)} tok/s` : "—"}
+          value={lastStep ? `${Math.round(lastStep.throughput_tokens_per_sec)} tok/s` : "-"}
         />
         <StatBox
           icon={Clock}
           label="Elapsed"
-          value={lastStep ? formatTime(lastStep.elapsed_seconds) : "—"}
+          value={lastStep ? formatTime(lastStep.elapsed_seconds) : "-"}
         />
       </div>
 

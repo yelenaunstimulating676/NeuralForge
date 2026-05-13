@@ -40,7 +40,7 @@ export default function InferenceOutputCard({
             {modelKind === "ft" ? "Fine-tuned" : "Base model"}
           </div>
           <div className="text-sm font-medium text-zinc-100 truncate">
-            {modelName || "—"}
+            {modelName || "-"}
           </div>
         </div>
         {state === "success" && result && (

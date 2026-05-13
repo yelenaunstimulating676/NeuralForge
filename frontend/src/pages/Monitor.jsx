@@ -7,6 +7,8 @@ import {
   deleteTrainingRun,
 } from "../api/client";
 import TrainingRunCard from "../components/TrainingRunCard";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import PageLoader from "../components/PageLoader";
 
 const FILTERS = [
   { value: "all", label: "Tutti" },
@@ -17,6 +19,7 @@ const FILTERS = [
 ];
 
 export default function Monitor() {
+  useDocumentTitle("Monitor");
   const navigate = useNavigate();
   const [runs, setRuns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -100,9 +103,7 @@ export default function Monitor() {
   };
 
   if (loading) {
-    return (
-      <div className="p-8 text-zinc-400">Caricamento storico training…</div>
-    );
+    return <PageLoader message="Caricamento storico training..." />;
   }
 
   if (error) {

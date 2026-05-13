@@ -242,3 +242,37 @@ Parking lot (v0.2.0):
   • Calibrazione qualitativa (dataset grandi)
   • Cleanup test M7.1 (extraction multi-file)
 8/9 milestone fatte. Mancante: M8 — Polish & Onboarding.
+
+
+
+M0 ✅ Bootstrap full-stack
+M1 ✅ System Detector
+M2 ✅ Model Manager
+M3 ✅ Dataset Engine
+M4 ✅ Training Engine
+M5 ✅ Training API + Live Monitor + Storico
+M6 ✅ Inference & Comparison
+M7 ✅ Export GGUF                       ← appena chiuso!
+M8 ⏭️  Polish & onboarding (FINALE)      ← riprenderemo qui
+
+Parking lot (v0.2.0):
+  • M6.3 streaming WebSocket
+  • M6.5 comparazione 3 modelli
+  • i18n (italiano + inglese)
+  • Onboarding wizard guidato
+  • Calibrazione qualitativa (dataset grandi + modelli migliori)
+  • Cleanup test M7.1 (extraction multi-file vs solo .exe)
+
+Stato test backend: 408 passing
+Risorse on-disk: SmolLM2-135M + 6 FT models + 2 file .gguf esportati
+                 + llama.cpp b3447 in ~/.neuralforge/llamacpp/
+
+Fix 1  ✅ Em-dash → trattino normale (5 file)
+Fix 2  ✅ Page title dinamico (useDocumentTitle su 8 pagine)
+Fix 3  ✅ Favicon NeuralForge (SVG saettina indigo)
+Fix 4  ✅ Backend offline badge (già funzionante out-of-the-box)
+Fix 5  ✅ Loading states uniformi (PageLoader component)
+Fix 6  ✅ Empty states con CTA (Dataset, Models, Inference, Export)
+Fix 7  ✅ Conferme distruttive (aggiunta a handleCancelJob)
+Fix 8  ✅ Error Boundary React (componente + wrap in main.jsx)
+Fix 9  ✅ Tooltip parametri tecnici (già fatti, encoding ok)

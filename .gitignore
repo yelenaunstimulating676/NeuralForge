@@ -26,3 +26,39 @@ frontend/dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Build artifacts
+backend/dist/
+backend/build/
+*.egg-info/
+
+# Tests
+backend/.pytest_cache/
+backend/htmlcov/
+backend/.coverage
+
+# Temporary export workdirs
+backend/data/exports/_tmp_export_*
+
+# Local dev junk
+req.json
+*.tmp
+*.bak
+
+# Build artifacts
+backend/dist/
+backend/build/
+*.egg-info/
+
+# Tests
+backend/.pytest_cache/
+backend/htmlcov/
+backend/.coverage
+
+# Temporary export workdirs
+backend/data/exports/_tmp_export_*
+
+# Local dev junk
+req.json
+*.tmp
+*.bak

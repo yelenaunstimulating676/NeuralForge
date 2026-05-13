@@ -18,8 +18,10 @@ import DatasetUploader from '../components/DatasetUploader'
 import DatasetConfigure from '../components/DatasetConfigure'
 import DatasetReview from '../components/DatasetReview'
 import DatasetListCard from '../components/DatasetListCard'
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 export default function Dataset() {
+  useDocumentTitle("Dataset");
   const [view, setView] = useState('home')
   const [datasets, setDatasets] = useState([])
   const [loading, setLoading] = useState(true)
@@ -178,9 +180,16 @@ export default function Dataset() {
           <p className="mt-4 text-sm text-[var(--color-text-muted)]">
             Nessun dataset creato.
           </p>
-          <p className="mt-1 text-xs text-[var(--color-text-muted)]/70">
-            Clicca "Nuovo dataset" per iniziare.
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]/70 mb-4">
+            Carica un file per iniziare il fine-tuning.
           </p>
+          <button
+            onClick={() => setView('wizard-1')}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded-lg inline-flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Crea il primo dataset
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

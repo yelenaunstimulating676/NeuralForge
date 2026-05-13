@@ -8,6 +8,9 @@ import {
 import InferenceModelPicker from "../components/InferenceModelPicker";
 import SamplingControls from "../components/SamplingControls";
 import InferenceOutputCard from "../components/InferenceOutputCard";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import PageLoader from "../components/PageLoader";
+import { useNavigate } from "react-router-dom";
 
 const DEFAULT_PARAMS = {
   max_new_tokens: 256,
@@ -25,6 +28,7 @@ const SUGGESTED_PROMPTS = [
 ];
 
 export default function Inference() {
+  useDocumentTitle("Inference");
   const [models, setModels] = useState([]);
   const [loadingModels, setLoadingModels] = useState(true);
   const [errorModels, setErrorModels] = useState(null);
@@ -39,6 +43,7 @@ export default function Inference() {
   const [rightOut, setRightOut] = useState({ state: "idle" });
 
   const [generating, setGenerating] = useState(false);
+  const navigate = useNavigate();
 
   // Carica lista modelli all'avvio
   const refreshModels = async () => {
@@ -130,7 +135,7 @@ export default function Inference() {
   };
 
   if (loadingModels) {
-    return <div className="p-8 text-zinc-400">Caricamento modelli…</div>;
+    return <PageLoader message="Caricamento modelli..." />;
   }
 
   if (errorModels) {
@@ -157,9 +162,16 @@ export default function Inference() {
         <div className="bg-zinc-900 border border-zinc-800 border-dashed rounded-2xl p-12 text-center mt-6">
           <Sparkles className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
           <p className="text-zinc-400 mb-1">Nessun modello disponibile.</p>
-          <p className="text-xs text-zinc-600">
+          <p className="text-xs text-zinc-600 mb-4">
             Scarica un base model e/o esegui un fine-tuning per usare questa pagina.
           </p>
+          <button
+            onClick={() => navigate("/models")}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded-lg inline-flex items-center gap-2"
+          >
+            <Sparkles className="w-4 h-4" />
+            Vai a Models
+          </button>
         </div>
       </div>
     );

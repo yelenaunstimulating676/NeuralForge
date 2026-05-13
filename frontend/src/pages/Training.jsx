@@ -21,6 +21,8 @@ import {
 import TrainingModelPicker from "../components/TrainingModelPicker";
 import TrainingDatasetPicker from "../components/TrainingDatasetPicker";
 import TrainingConfigForm from "../components/TrainingConfigForm";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import PageLoader from "../components/PageLoader";
 
 const DEFAULT_CONFIG = {
   num_epochs: 3,
@@ -57,7 +59,7 @@ function formatTime(seconds) {
 }
 
 function formatNumber(n) {
-  if (n == null) return "—";
+  if (n == null) return "-";
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
   return n.toString();
@@ -93,6 +95,7 @@ function StimaBox({ icon: Icon, label, value, sublabel, danger }) {
 }
 
 export default function Training() {
+  useDocumentTitle("Training");
   const navigate = useNavigate();
 
   const [models, setModels] = useState([]);
@@ -201,7 +204,7 @@ export default function Training() {
   };
 
   if (loading) {
-    return <div className="p-8 text-zinc-400">Caricamento risorse…</div>;
+    return <PageLoader message="Caricamento risorse..." />;
   }
 
   if (!models.length || !datasets.length) {

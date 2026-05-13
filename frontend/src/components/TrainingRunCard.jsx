@@ -51,7 +51,7 @@ function StatusPill({ status }) {
 }
 
 function formatDate(iso) {
-  if (!iso) return "—";
+  if (!iso) return "-";
   try {
     const d = new Date(iso);
     return d.toLocaleString("it-IT", {
@@ -67,7 +67,7 @@ function formatDate(iso) {
 }
 
 function formatDuration(start, end) {
-  if (!start) return "—";
+  if (!start) return "-";
   const startMs = new Date(start).getTime();
   const endMs = end ? new Date(end).getTime() : Date.now();
   const sec = Math.round((endMs - startMs) / 1000);
@@ -163,7 +163,7 @@ export default function TrainingRunCard({ run, onDelete, onCancel }) {
         <span className="text-zinc-600">←</span>
         <Database className="w-3.5 h-3.5 text-zinc-500" />
         <span className="text-zinc-300">
-          {run.dataset_name || (run.dataset_id ? `Dataset #${run.dataset_id}` : "—")}
+          {run.dataset_name || (run.dataset_id ? `Dataset #${run.dataset_id}` : "-")}
         </span>
       </div>
 
@@ -174,7 +174,7 @@ export default function TrainingRunCard({ run, onDelete, onCancel }) {
             <TrendingUp className="w-3 h-3" /> Loss finale
           </div>
           <div className="text-base font-semibold font-mono text-zinc-100">
-            {finalLoss != null ? finalLoss.toFixed(4) : "—"}
+            {finalLoss != null ? finalLoss.toFixed(4) : "-"}
           </div>
         </div>
         <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-2.5">
@@ -182,7 +182,7 @@ export default function TrainingRunCard({ run, onDelete, onCancel }) {
             <Hash className="w-3 h-3" /> Step
           </div>
           <div className="text-base font-semibold font-mono text-zinc-100">
-            {totalSteps != null ? totalSteps : "—"}
+            {totalSteps != null ? totalSteps : "-"}
           </div>
         </div>
         <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-2.5">

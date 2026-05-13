@@ -1,7 +1,7 @@
 /**
  * Dashboard — landing page.
- * Mostra stato backend, sistema, GPU rilevate (con VRAM live)
- * e configurazione di training suggerita.
+ * Mostra Quick Start guide (onboarding), stato backend, sistema, GPU
+ * rilevate (con VRAM live) e configurazione di training suggerita.
  */
 
 import { useEffect, useState } from 'react'
@@ -10,17 +10,28 @@ import {
   fetchHealth,
   fetchSystemInfo,
   fetchTrainingSuggestion,
+  fetchBaseModels,
+  fetchDatasets,
+  fetchTrainingRuns,
 } from '../api/client'
 import SystemCard from '../components/SystemCard'
 import GPUCard from '../components/GPUCard'
 import ConfigSuggestion from '../components/ConfigSuggestion'
+import QuickStartGuide from '../components/QuickStartGuide'
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 export default function Dashboard() {
+  useDocumentTitle("Dashboard");
   const [health, setHealth] = useState(null)
   const [systemInfo, setSystemInfo] = useState(null)
   const [config, setConfig] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
+
+  // Onboarding state
+  const [hasModels, setHasModels] = useState(false)
+  const [hasDatasets, setHasDatasets] = useState(false)
+  const [hasTrainings, setHasTrainings] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -40,6 +51,21 @@ export default function Dashboard() {
           } catch (e) {
             console.warn('Config suggestion failed:', e.message)
           }
+        }
+
+        // Onboarding: conta cosa l'utente ha già fatto
+        try {
+          const [models, datasets, runs] = await Promise.all([
+            fetchBaseModels(),
+            fetchDatasets(),
+            fetchTrainingRuns(),
+          ])
+          if (cancelled) return
+          setHasModels((models || []).length > 0)
+          setHasDatasets((datasets || []).length > 0)
+          setHasTrainings((runs || []).length > 0)
+        } catch (e) {
+          console.warn('Onboarding check failed:', e.message)
         }
       } catch (err) {
         if (!cancelled) setError(err.message ?? 'Errore di caricamento')
@@ -103,6 +129,13 @@ export default function Dashboard() {
           Stato del sistema NeuralForge · Backend v{health?.version}
         </p>
       </header>
+
+      {/* Quick Start (mostrato solo se onboarding non completo) */}
+      <QuickStartGuide
+        hasModels={hasModels}
+        hasDatasets={hasDatasets}
+        hasTrainings={hasTrainings}
+      />
 
       {/* Sistema + GPU */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

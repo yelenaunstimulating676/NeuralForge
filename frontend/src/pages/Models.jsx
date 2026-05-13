@@ -20,11 +20,13 @@ import WhitelistEntry from '../components/WhitelistEntry'
 import ModelCard from '../components/ModelCard'
 import CustomRepoForm from '../components/CustomRepoForm'
 import DownloadJobCard from '../components/DownloadJobCard'
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const POLL_JOBS_MS = 1500
 const POLL_MODELS_MS = 5000
 
 export default function Models() {
+  useDocumentTitle("Models");
   const [tab, setTab] = useState('whitelist') // whitelist | custom | local
 
   const [whitelist, setWhitelist] = useState([])
@@ -132,6 +134,9 @@ export default function Models() {
   }
 
   const handleCancelJob = async (jobId) => {
+    if (!window.confirm('Annullare il download in corso? Il progresso verrà perso.')) {
+      return
+    }
     try {
       await cancelJob(jobId)
     } catch (err) {
@@ -282,9 +287,16 @@ export default function Models() {
               <p className="mt-4 text-sm text-[var(--color-text-muted)]">
                 Nessun modello scaricato.
               </p>
-              <p className="mt-1 text-xs text-[var(--color-text-muted)]/70">
-                Vai sui tab Raccomandati o Custom per iniziare.
+              <p className="mt-1 text-xs text-[var(--color-text-muted)]/70 mb-4">
+                Scarica un base model per iniziare ad allenare.
               </p>
+              <button
+                onClick={() => setTab('recommended')}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded-lg inline-flex items-center gap-2"
+              >
+                <Inbox className="w-4 h-4" />
+                Vai ai modelli raccomandati
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

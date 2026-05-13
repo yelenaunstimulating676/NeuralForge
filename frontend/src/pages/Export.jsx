@@ -16,9 +16,12 @@ import {
 } from "../api/client";
 import ExportModal from "../components/ExportModal";
 import ExportJobCard from "../components/ExportJobCard";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import PageLoader from "../components/PageLoader";
+import { useNavigate } from "react-router-dom";
 
 function formatBytes(n) {
-  if (n == null) return "â€”";
+  if (n == null) return "-";
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`;
   if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
@@ -26,7 +29,7 @@ function formatBytes(n) {
 }
 
 function formatDate(iso) {
-  if (!iso) return "â€”";
+  if (!iso) return "-";
   try {
     return new Date(iso).toLocaleString("it-IT", {
       day: "2-digit",
@@ -41,11 +44,13 @@ function formatDate(iso) {
 }
 
 export default function Export() {
+  useDocumentTitle("Export");
   const [modalOpen, setModalOpen] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const load = async () => {
     try {
@@ -110,7 +115,7 @@ export default function Export() {
     .slice(0, 3);
 
   if (loading) {
-    return <div className="p-8 text-zinc-400">Caricamentoâ€¦</div>;
+    return <PageLoader message="Caricamento export..." />;
   }
 
   return (
@@ -189,8 +194,15 @@ export default function Export() {
             <Package className="w-12 h-12 text-zinc-700 mx-auto mb-3" />
             <p className="text-zinc-400 mb-1">Nessun export salvato.</p>
             <p className="text-xs text-zinc-600 mb-4">
-              Clicca "Nuovo export" per creare il primo .gguf.
+              Crea un .gguf da un modello fine-tunato per usarlo in Ollama o LM Studio.
             </p>
+            <button
+              onClick={() => setModalOpen(true)}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded-lg inline-flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Crea il primo export
+            </button>
           </div>
         ) : (
           <div className="space-y-2">

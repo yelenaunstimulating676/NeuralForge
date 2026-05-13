@@ -25,7 +25,7 @@ export default function DownloadJobCard({ job, onCancel }) {
   const StatusIcon = STATUS_ICONS[job.status] || Loader2
   const colorClass = STATUS_COLORS[job.status] || ''
   const isActive = job.status === 'running' || job.status === 'pending'
-  const repo = job.result?.hf_repo ?? '—'
+  const repo = job.result?.hf_repo ?? '-'
 
   return (
     <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
