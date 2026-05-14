@@ -62,3 +62,5 @@ backend/data/exports/_tmp_export_*
 req.json
 *.tmp
 *.bak
+*.docx
+.STATUS.md

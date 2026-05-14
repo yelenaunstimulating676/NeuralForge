@@ -24,32 +24,58 @@ Training QLoRA, confronto inference side-by-side, export GGUF in un click — tu
   <img src="docs/screenshots/dashboard.png" alt="NeuralForge Dashboard" width="900" />
 </p>
 
+### 🎥 Video demo
+
+[![Guarda la demo](https://img.shields.io/badge/▶_Guarda_su_YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/sem7k0spFh4)
+
+Walkthrough end-to-end: download custom HuggingFace → import dataset → training QLoRA con monitor live → confronto base vs fine-tuned → export GGUF.
+
 <details>
 <summary><strong>Altri screenshot</strong></summary>
 
 ### Model Manager
+Whitelist di modelli HuggingFace curati, download da repo HF custom con detection dei modelli gated, e un registro locale dei modelli scaricati.
+
 <p align="center">
   <img src="docs/screenshots/models.png" alt="Model Manager" width="850" />
 </p>
 
 ### Wizard Dataset
+Wizard a 3 step per importare dataset da PDF, DOCX, CSV, TXT, JSON o JSONL in formato alpaca.
+
 <p align="center">
   <img src="docs/screenshots/dataset.png" alt="Wizard Dataset" width="850" />
 </p>
 
-### In arrivo
-- Live Monitor Training (chart in tempo reale) — `docs/screenshots/training-live.png`
-- Confronto Inference (base vs fine-tunato) — `docs/screenshots/inference.png`
-- Export GGUF — `docs/screenshots/export.png`
+### Configurazione Training
+Config suggerita automaticamente in base alla GPU/VRAM rilevata, con controllo manuale completo sugli iperparametri QLoRA.
+
+<p align="center">
+  <img src="docs/screenshots/training.png" alt="Configurazione Training" width="850" />
+</p>
+
+### Live Monitor
+Chart in tempo reale (loss, learning rate, VRAM, throughput) streammati via WebSocket durante il training.
+
+<p align="center">
+  <img src="docs/screenshots/live-training.png" alt="Live Monitor" width="850" />
+</p>
+
+### Confronto Inference
+Confronto side-by-side tra modello base e fine-tunato sullo stesso prompt.
+
+<p align="center">
+  <img src="docs/screenshots/inference.png" alt="Confronto Inference" width="850" />
+</p>
+
+### Export GGUF
+Conversione one-click a GGUF (Q4_K_M, Q5_K_M, Q8_0, Q3_K_M, F16). Scarica automaticamente llama.cpp al primo export.
+
+<p align="center">
+  <img src="docs/screenshots/export.png" alt="Export GGUF" width="850" />
+</p>
 
 </details>
-
-### 🎥 Video demo
-
-<!-- TODO: Sostituire con il link YouTube reale una volta registrato -->
-> Un walkthrough di 2-3 minuti del workflow completo (scarica modello → carica dataset → training → confronto → export).
->
-> **In arrivo:** `https://youtu.be/...`
 
 ---
 
@@ -59,7 +85,40 @@ NeuralForge è una piattaforma di fine-tuning local-first per LLM. Avvolge lo st
 
 **L'intera pipeline gira sulla tua macchina.** Nessuna telemetria, nessuna API key, nessun dato che esce dall'hardware. Tu porti un base model da HuggingFace e un dataset; NeuralForge gestisce tokenizzazione, training QLoRA con monitoring live, confronto inference, ed export al formato GGUF usato da Ollama, LM Studio e llama.cpp.
 
-Pensato per il sweet spot delle GPU consumer: una singola scheda da 12 GB (classe RTX 4070) è sufficiente per fare fine-tuning di modelli classe 3B.
+Pensato per il sweet spot delle GPU consumer: una singola scheda da 12 GB (classe RTX 4070) è sufficiente per fare fine-tuning di modelli classe 1-3B.
+
+## Validazione su caso reale
+
+NeuralForge è stata usata per fare fine-tuning di un modello sulla sua stessa documentazione API come proof-of-concept. Il run completo è documentato nel video demo qui sopra.
+
+| Voce | Valore |
+|---|---|
+| Hardware | NVIDIA RTX 4070 (12 GB VRAM) |
+| Base model | Qwen2.5-1.5B-Instruct |
+| Dataset | 123 coppie Q&A scritte a mano (NeuralForge API docs, senza AI generation) |
+| Strategia | QLoRA, LoRA rank 32, 3 epoche |
+| Tempo di training | **1 min 38 sec** |
+| Step | 93 |
+| Loss finale | 2.09 |
+| VRAM di picco | ~3.9 GB |
+
+### Output di esempio: base vs fine-tunato
+
+Stesso prompt a entrambi i modelli: *"What is the purpose of the /api/training endpoint?"*
+
+**Base model (Qwen2.5-1.5B-Instruct, senza fine-tuning):**
+
+> The /api/training endpoint is used to submit training requests and receive responses from an assistant. It allows users to request specific tasks or information from the assistant, such as completing a task, finding relevant information, or answering questions.
+
+→ Generico e off-topic. Il modello base non ha idea di cosa sia NeuralForge e tratta "training" come una specie di servizio di formazione aziendale.
+
+**Modello fine-tunato (stesso base + 1m 38s di training QLoRA sul dataset):**
+
+> The /api/training endpoint runs fine-tuning jobs (...). The frontend POSTs a JSON with model name, dataset path (optional), base config (e.g., LlamaConfig), and optional overrides (custom learning rate, temperature). The backend creates an AsyncJob object in state.db, which tracks progress through the run() method. Once complete, the frontend polls for status updates until 'finished' or 'failed', then displays the result page with download links to the final weights and logs files.
+
+→ Stesso prompt, risposta completamente diversa: ora dentro al dominio NeuralForge. Il modello ha imparato la struttura request/response (POST + payload JSON), il pattern async job, e il flusso di polling. Ci sono alcune piccole imprecisioni (il backend reale non gira su AWS), ma lo shift di dominio è visibile e il pattern strutturale coincide con la documentazione.
+
+Questo è un proof-of-concept su un dataset minimo. Con dataset più grandi (1000+ esempi), modelli più grandi (Phi-3.5-mini, Llama-3.2-3B) e più epoche, è ottenibile una specializzazione molto più netta — è la roadmap della v0.2.0.
 
 ## Funzionalità
 
@@ -183,7 +242,7 @@ Poi apri <http://127.0.0.1:5173> nel browser. Le API docs sono su <http://127.0.
 - ✅ M5: training API + WebSocket live monitor + storico
 - ✅ M6: inference + confronto side-by-side base/FT
 - ✅ M7: pipeline export GGUF con llama.cpp auto-scaricato
-- ✅ M8: polish, onboarding, documentazione
+- ✅ M8: polish, onboarding, documentazione, validazione real-world
 
 ### v0.2.0 (pianificato)
 - Modulo Dataset Importer (MITRE ATT&CK, NIST CSF, CVE database, plugin custom)

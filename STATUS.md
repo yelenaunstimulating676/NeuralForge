@@ -276,3 +276,33 @@ Fix 6  ✅ Empty states con CTA (Dataset, Models, Inference, Export)
 Fix 7  ✅ Conferme distruttive (aggiunta a handleCancelJob)
 Fix 8  ✅ Error Boundary React (componente + wrap in main.jsx)
 Fix 9  ✅ Tooltip parametri tecnici (già fatti, encoding ok)
+
+Ricapitolando la sessione
+Hai fatto un MUCCHIO oggi:
+M8.1 — 9 fix di polish
+
+Em-dash sistemati
+Page title dinamico su 8 pagine
+Favicon NeuralForge
+Backend offline badge (già OK)
+PageLoader uniforme
+4 empty states con CTA
+Conferma su cancel job
+ErrorBoundary React
+Tooltip parametri tecnici (già OK, encoding OK)
+
+M8.2 — Onboarding QuickStartGuide
+
+Componente con 3 step grafici (Models → Dataset → Training)
+Auto-hide quando completato
+Stati visuali (done/active/locked) con badge
+
+M8.3 — Documentazione completa
+
+README inglese serio (hero, features, architecture, roadmap)
+README italiano speculare
+LICENSE MIT
+CONTRIBUTING
+3 screenshot integrati
+
+Sei a 8.5/9 milestone. Manca M8.5 (validazione + demo) e M8.6 (soft packaging).
